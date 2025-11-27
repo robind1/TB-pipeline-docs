@@ -6,15 +6,15 @@
 
 | Code | Display Name | Usage |
 | :--- | :--- | :--- |
-| **69548-6** | Genetic variant assessment | Variant Observation resources. |
-| **81247-9** | Master HL7 genetic variant reporting panel | DiagnosticReport resource. |
-| **81290-9** | Genomic DNA change (gHGVS) | Genomic changes. |
-| **48005-3** | Amino acid change (pHGVS) | Protein changes. |
-| **48018-6** | Gene studied [ID] | Affected gene. |
-| **51961-1** | Genetic variation's effect on drug efficacy | Linking variant to a drug. |
-| **53037-8** | Genetic variation clinical significance [Imp] | WHO classification. |
-| **82121-5** | Allelic read depth | Sequencing depth. |
-| **614-8** | Mycobacterial strain [Type] in Isolate by Mycobacterial subtyping | Lineage classification. |
+| **69548-6** | Genetic variant assessment | Variant Observation resources |
+| **81247-9** | Master HL7 genetic variant reporting panel | DiagnosticReport resource |
+| **81290-9** | Genomic DNA change (gHGVS) | Genomic changes |
+| **48005-3** | Amino acid change (pHGVS) | Protein changes |
+| **48018-6** | Gene studied [ID] | Affected gene |
+| **51961-1** | Genetic variation's effect on drug efficacy | Linking variant to a drug |
+| **53037-8** | Genetic variation clinical significance [Imp] | WHO classification |
+| **82121-5** | Allelic read depth | Sequencing depth |
+| **614-8** | Mycobacterial strain [Type] in Isolate by Mycobacterial subtyping | Lineage classification |
 
 ### SNOMED CT Codes
 
@@ -36,11 +36,11 @@
 **Clinical & Specimen**
 | Code | Display Name | Usage |
 | :--- | :--- | :--- |
-| **415345001** | Rifampicin resistant tuberculosis | Diagnostic conclusion. |
-| **414546009** | Isoniazid resistant tuberculosis | Diagnostic conclusion. |
-| **423092005** | Multidrug resistant tuberculosis | Diagnostic conclusion. |
+| **415345001** | Rifampicin resistant tuberculosis | Diagnostic conclusion |
+| **414546009** | Isoniazid resistant tuberculosis | Diagnostic conclusion |
+| **423092005** | Multidrug resistant tuberculosis | Diagnostic conclusion |
 | **OV000435** | Pre-XDR-TB | Diagnostic conclusion. |
-| **710106005** | Extensively drug resistant tuberculosis | Diagnostic conclusion. |
+| **710106005** | Extensively drug resistant tuberculosis | Diagnostic conclusion |
 
 ### Sequence Ontology (SO)
 
@@ -65,4 +65,5 @@
 | **SO:0001818** | protein_altering_variant |
 | **SO:0001580** | coding_sequence_variant |
 | **SO:0001619** | non_coding_transcript_variant |
+
 | **SO:0001566** | regulatory_region_variant |
