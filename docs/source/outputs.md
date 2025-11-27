@@ -29,12 +29,12 @@ Merges the FHIR Genomics Observations with patient, facility, and practitioner i
 
 | Classification | Definition | Logic |
 | :--- | :--- | :--- |
-| **Sensitive** | No resistance detected | No mutations in resistance-associated genes. |
-| **RR-TB** | Rifampicin-resistant TB | Resistance to Rifampicin detected (no Isoniazid). |
-| **HR-TB** | Isoniazid-resistant TB | Resistance to Isoniazid detected (no Rifampicin). |
-| **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin. |
-| **Pre-XDR-TB** | Pre-Extensively drug-resistant | MDR + Resistance to either Fluoroquinolone **OR** second-line drug. |
-| **XDR-TB** | Extensively drug-resistant | MDR + Resistance to Fluoroquinolone **AND** second-line drug. |
+| **Sensitive** | No resistance detected | No mutations in resistance-associated genes |
+| **RR-TB** | Rifampicin-resistant TB | Resistance to Rifampicin detected|
+| **HR-TB** | Isoniazid-resistant TB | Resistance to Isoniazid detected |
+| **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin |
+| **Pre-XDR-TB** | Pre-Extensively drug-resistant | MDR + Resistance to either Fluoroquinolone **OR** second-line drug |
+| **XDR-TB** | Extensively drug-resistant | MDR + Resistance to Fluoroquinolone **AND** second-line drug |
 
 ## Output Directory Structure
 
@@ -52,4 +52,5 @@ results/
 │   ├── *.validation.txt
 ├── reports/
 │   └── *.summary_report.txt     
+
 ```
