@@ -14,7 +14,7 @@ The main workflow handles channel processing and parallel execution.
     *   MultiQC aggregate reporting
 
 ## Nanopore (Long-Read) Workflow
-**File:** `workflows/nanopore.nf`
+**File:** `nanopore.nf`
 
 For Oxford Nanopore Technologies (ONT) sequencing data
 
@@ -33,7 +33,7 @@ For Oxford Nanopore Technologies (ONT) sequencing data
     *   **Quality Filter**: Genotype Quality (GQ) ≥ 20.
 
 ## Illumina (Short-Read) Workflow
-**File:** `workflows/illumina.nf`
+**File:** `illumina.nf`
 
 For Illumina sequencing data
 
@@ -51,7 +51,7 @@ For Illumina sequencing data
     *   **Quality Filter**: Genotype Quality (GQ) ≥ 20.
 
 ## VCF Workflow
-**File:** `workflows/vcf.nf`
+**File:** `vcf.nf`
 
 For pre-called variant files
 
@@ -69,7 +69,7 @@ Variants are matched with data from a WHO TB mutation database to predict drug r
 
 **Annotated Fields:**
 *   `GENE`: The gene affected by the variant.
-*   `DRUG`: Antibiotics associated with the resistance.
+*   `DRUG`: Antibiotics associated with resistance.
 *   `EFFECT`: Predicted molecular effect (e.g., missense, frameshift).
 *   `WHO_CLASSIFICATION`: Confidence level of resistance association (e.g., "Assoc w R").
 
@@ -97,4 +97,5 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources
     *   **Observations**: Uses LOINC codes.
 3.  **Resource Creation**:
     *   Generates `Observation` resources for each detected variant.
+
     *   Embeds WHO classification and drug resistance data.
