@@ -108,3 +108,5 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources
     *   Generates `Observation` resources for each detected variant.
     *   Embeds WHO classification and drug resistance data.
 
+## Workflow Parameter 
+`nextflow.config` defines all input files, directories, versioning, and specific tool parameters, relative to the base directory ($baseDir).
