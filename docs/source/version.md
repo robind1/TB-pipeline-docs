@@ -1,7 +1,7 @@
 # Version Information
 
 ## Pipeline Version
-*   **Pipeline Version**: 2.0
+*   **Pipeline Version**: 1.0.0
 
 
 ## Reference Data Versions
@@ -16,4 +16,5 @@
 *   **Lineage Barcodes**: 
     *   **Source**: TBProfiler SNP Panel
     *   **Repository**: [jodyphelan/TBProfiler](https://github.com/jodyphelan/TBProfiler)
+
 
