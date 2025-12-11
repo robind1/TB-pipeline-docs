@@ -21,12 +21,16 @@ For Oxford Nanopore Technologies (ONT) sequencing data
 1.  **Quality Control**: 
     *   Tool: `FastQC`
     *   Metrics: Per-sample quality, GC content, per-base sequence quality, and N-content.
-2.  **Alignment**:
+2.  **Trimming**
+    * **Tool:** `Chopper`
+    * **Function:** Filters reads based on average quality and minimum length.
+    * **Parameters:** `min_q = 10`, `min_l = 500`.
+3.  **Alignment**:
     *   Tool: `Minimap2`
     *   Reference: *M. tuberculosis* H37Rv (NC_000962.3).
-3.  **Variant Calling**:
+4.  **Variant Calling**:
     *   Tool: `Medaka`
-4.  **Filtering**:
+5.  **Filtering**:
     *   **Region Filter**: Excludes repetitive regions (PE/PPE genes).
     *   **Type Filter**: SNPs and Indels only.
     *   **Depth Filter**: Minimum coverage (DP) ≥ 5x.
@@ -39,6 +43,10 @@ For Illumina sequencing data
 
 1.  **Quality Control**:
     *   Tool: `FastQC`
+2.  **Trimming**
+    * **Tool:** `Trimmomatic`
+    * **Function:** Performs paired-end quality trimming.
+    * **Settings:** Leading/Trailing quality cutoff (3), Sliding Window quality cutoff (4:20), and minimum length (36 bp).
 2.  **Alignment**:
     *   Tool: `BWA-MEM2`
     *   Reference: *M. tuberculosis* H37Rv (NC_000962.3).
@@ -65,6 +73,7 @@ For pre-called variant files
 
 ## Variant Annotation
 
+Tool: `bcftools`
 Variants are matched with data from a WHO TB mutation database to predict drug resistance.
 
 **Annotated Fields:**
@@ -97,5 +106,5 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources
     *   **Observations**: Uses LOINC codes.
 3.  **Resource Creation**:
     *   Generates `Observation` resources for each detected variant.
-
     *   Embeds WHO classification and drug resistance data.
+
