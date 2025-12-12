@@ -2,8 +2,9 @@
 
 ## Workflow Diagram
 
-```{image} _static/pipeline_diagram.png
+```{image} _static/tbpipeline.png
 :alt: Pipeline Architecture Diagram
-:width: 1200px
+:width: 1400px
 :align: center
+
 ```
