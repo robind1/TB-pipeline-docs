@@ -14,5 +14,5 @@ Platform agnostic TB resistance pipeline
    components
    outputs
    FHIR
-   phylogenetic analysis
+   phylogenetic
    version
