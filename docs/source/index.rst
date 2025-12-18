@@ -1,6 +1,6 @@
 .. TB Mutation Pipeline documentation master file
 
-Platform agnostic TB resistance pipeline
+Platform-agnostic TB resistance pipeline
 ==================================
 
 .. toctree::
