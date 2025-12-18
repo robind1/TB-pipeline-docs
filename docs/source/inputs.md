@@ -1,6 +1,6 @@
 # Input Requirements
 
-The pipeline accepts three types of input data.
+The pipeline accepts these types of input data.
 
 ## Illumina Reads
 *   **Format**: Paired-end FASTQ files (`.fastq.gz`).
@@ -12,5 +12,3 @@ The pipeline accepts three types of input data.
 
 ## Raw VCFs
 *   **Format**: VCF files (`.vcf` or `.vcf.gz`).
-
-
