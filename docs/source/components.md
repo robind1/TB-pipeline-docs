@@ -34,7 +34,7 @@ For Illumina paired-end sequencing data
     *   Metrics: Per-sample quality, GC content, per-base sequence quality, and N-content.
 2.  **Trimming**
     * **Tool:** `Trimmomatic`
-    * **Function:**Quality trimming.
+    * **Function:** Quality trimming.
     * **Settings:** Leading/Trailing quality cutoff (3), Sliding Window quality cutoff (4:20), and minimum length (36 bp).
 2.  **Alignment**:
     *   Tool: `BWA-MEM2`
@@ -92,4 +92,5 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources.
 
 ## Workflow Parameter 
 `nextflow.config` defines all input files, directories, versioning, and specific tool parameters, relative to the base directory ($baseDir).
+
 
