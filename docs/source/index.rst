@@ -14,12 +14,5 @@ Platform agnostic TB resistance pipeline
    components
    outputs
    FHIR
+   phylogenetic analysis
    version
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
