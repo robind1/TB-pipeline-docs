@@ -5,7 +5,7 @@ The [phylogenetic analysis pipeline](https://github.com/oucru-id/tb-phylo-analys
 
 ```{image} _static/tbphyloflow.png
 :alt: Phylogenetic Analysis Architecture Diagram
-:width: 1000px
+:width: 700px
 :align: center
 ```
 
