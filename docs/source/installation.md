@@ -4,7 +4,6 @@
 To run this pipeline, you need the following installed on your system:
 
 *   [Nextflow](https://www.nextflow.io/)
-*   [Docker](https://www.docker.com/)
 *   [Python](https://www.python.org/)
 *   [FastQC](https://github.com/s-andrews/FastQC)
 *   [MultiQC](https://github.com/MultiQC/MultiQC)
@@ -19,19 +18,15 @@ To run this pipeline, you need the following installed on your system:
 ## Setup
 1.  Clone the repository for local installation:
     ```bash
-    git clone https://github.com/robind1/TBmutationpipeline.git
+    git clone https://github.com/robind1/TB-mutation-pipeline.git
     cd tb-mutation-pipeline
     ```
-2.  Install Docker:
-    ```bash
-    curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
-    ```
-3.  Install Nextflow:
+2.  Install Nextflow:
     ```bash
     curl -s https://get.nextflow.io | bash
     ```
-4.  Testing the Nextflow install:
+3.  Testing the Nextflow install:
     ```bash
     nextflow -v
-
     ```
+
