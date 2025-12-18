@@ -47,3 +47,10 @@ The output is a Multiple Sequence Alignment (MSA) of variable sites (SNPs) relat
 2.  **`phylo_tree.nwk`**
 3.  **`metadata.tsv`**: Sample metadata including Patient ID, Geolocation, and Lineage/Conclusion.
 4.  **Visualization:** png rendering of the phylogenetic tree (circular, rectangular, and unrooted), heatmap of SNP distances, histogram of SNP distances, and violin plot.
+
+```{image} _static/phylo_tree_rectangular.png
+:alt: Rectangular phylogenetic tree TB example
+:width: 1200px
+:align: center
+```
+Example of a phylogenetic tree generated from the pipeline. Data used: [Afro-TB](https://bioinformatics.um6p.ma/AfroTB/), [Gómez-González et al. 2022](https://doi.org/10.1093/bib/bbac256), [Thorpe et al. 2024](https://doi.org/10.1038/s41598-024-55865-1)
