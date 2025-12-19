@@ -86,11 +86,11 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources.
     *   **Variants**: Mapped to HGVS nomenclature.
     *   **Observations**: Uses LOINC codes.
 3.  **Resource Creation**:
-    *   Generates `Observation` resources for each detected variant.
+    *   Generates `Observation` resources for each detected variant and embeds WHO classification resistance data.
     *   Generates `DiagnosticReport` resource for the conclusion from all variants.
-    *   Embeds WHO classification and drug resistance data.
 
 ## Workflow Parameter 
 `nextflow.config` defines all input files, directories, versioning, and specific tool parameters, relative to the base directory ($baseDir).
+
 
 
