@@ -7,6 +7,8 @@ To run this pipeline, you need the following installed on your system:
 *   [Python](https://www.python.org/)
 *   [FastQC](https://github.com/s-andrews/FastQC)
 *   [MultiQC](https://github.com/MultiQC/MultiQC)
+*   [Trimmmomatic](https://github.com/usadellab/Trimmomatic)
+*   [Chopper](https://github.com/wdecoster/chopper) 
 *   [BWA-MEM2](https://github.com/bwa-mem2/bwa-mem2) 
 *   [minimap2](https://github.com/lh3/minimap2)
 *   [GATK](https://gatk.broadinstitute.org/hc/en-us) 
@@ -29,4 +31,5 @@ To run this pipeline, you need the following installed on your system:
     ```bash
     nextflow -v
     ```
+
 
