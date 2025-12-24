@@ -32,6 +32,10 @@
 | **48836000** | Product containing amikacin |
 | **71451001** | Product containing kanamycin |
 | **14170004** | Product containing capreomycin |
+| **414148003** | Product containing ethionamide |
+| **125695009** | Product containing linezolid |
+| **714087008** | Product containing bedaquiline |
+| **72924009** | Product containing clofazimine |
 
 **Clinical & Specimen**
 | Code | Display Name | Usage |
@@ -65,5 +69,4 @@
 | **SO:0001818** | protein_altering_variant |
 | **SO:0001580** | coding_sequence_variant |
 | **SO:0001619** | non_coding_transcript_variant |
-
 | **SO:0001566** | regulatory_region_variant |
