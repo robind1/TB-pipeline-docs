@@ -37,15 +37,6 @@
 | **714087008** | Product containing bedaquiline |
 | **72924009** | Product containing clofazimine |
 
-**Clinical & Specimen**
-| Code | Display Name | Usage |
-| :--- | :--- | :--- |
-| **415345001** | Rifampicin resistant tuberculosis | Diagnostic conclusion |
-| **414546009** | Isoniazid resistant tuberculosis | Diagnostic conclusion |
-| **423092005** | Multidrug resistant tuberculosis | Diagnostic conclusion |
-| **OV000435** | Pre-XDR-TB | Diagnostic conclusion. |
-| **710106005** | Extensively drug resistant tuberculosis | Diagnostic conclusion |
-
 ### Sequence Ontology (SO)
 
 | Code | Display Name |
@@ -70,3 +61,21 @@
 | **SO:0001580** | coding_sequence_variant |
 | **SO:0001619** | non_coding_transcript_variant |
 | **SO:0001566** | regulatory_region_variant |
+
+**WHO Classification**
+| Code | Display Name | Usage |
+| :--- | :--- | :--- |
+| **LA26333-7** | Uncertain significance | LOINC |
+| **SP000478** | Assoc w R | Custom code |
+| **SP000479** | Assoc w R - Interim | Custom code |
+| **SP000480** | Not assoc w R - Interim | Custom code |
+| **SP000481** | Not assoc w R | Custom code |
+
+**Clinical & Specimen**
+| Code | Display Name | Usage |
+| :--- | :--- | :--- |
+| **415345001** | Rifampicin resistant tuberculosis | Diagnostic conclusion |
+| **414546009** | Isoniazid resistant tuberculosis | Diagnostic conclusion |
+| **423092005** | Multidrug resistant tuberculosis | Diagnostic conclusion |
+| **OV000435** | Pre-XDR-TB | Diagnostic conclusion |
+| **710106005** | Extensively drug resistant tuberculosis | Diagnostic conclusion |
