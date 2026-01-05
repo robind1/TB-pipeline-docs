@@ -1,53 +1,105 @@
-# Output Files
-The primary output is the **HL7 FHIR** bundle and per-sample genomic reports.
+# Data Processing
 
-## FHIR Genomic Bundle
-### Observation Resources
-Each detected variant generates an observation resource containing:
-*   **Genomic Coordinates**: 
-    *   **gHGVS**: Genomic DNA change (e.g., `NC_000962.3:g.761155C>T`)
-    *   **pHGVS**: Amino acid change (e.g., `p.Ser315Thr`)
-*   **Resistance Gene Information**: Identifies the affected gene (e.g., *rpoB*, *katG*, *inhA*).
-*   **Drug Resistance Associations**: Links variants to specific drugs (e.g., Rifampicin, Isoniazid, Fluoroquinolones) using SNOMED CT codes.
-*   **Lineage Information**: Links the classified TB lineage (e.g., Lineage 1: Indo-Oceanic, Lineage 2: East Asian/Beijing).
-*   **Quality Metrics**: Includes Allele Read Depth (RD).
-*   **Genome Position**: Includes the specific location of the variant detected (e.g., `761155`)
+## Main Workflow
+**File:** `main.nf`
+The main workflow handles channel processing and parallel execution. It automatically detects input data types (Illumina, Nanopore, or VCF) and routes them to the dedicated sub-workflows. All inputs are processed concurrently.
 
-## Clinical Data Integration
-Merges the FHIR Genomics Observations with patient, facility, and practitioner information to create a complete genomic diagnostic report document.
-### DiagnosticReport Resource
-*   **Conclusion**: A human-readable summary report.
-*   **Presentation**: Contains a Base64 encoded HTML representation of the report.
-*   **Links**: References the Patient, Specimen, and all Variant Observations.
+## Nanopore (Long-Read) Workflow
+**File:** `nanopore.nf`
+For Oxford Nanopore Technologies (ONT) sequencing data
+1.  **Quality Control**: 
+    *   Tool: `FastQC`
+    *   Metrics: Per-sample quality, GC content, per-base sequence quality, and N-content.
+2.  **Trimming**
+    * **Tool:** `Chopper`
+    * **Function:** Filters reads based on average quality and minimum length.
+    * **Parameters:** `min_q = 10`, `min_l = 500`.
+3.  **Alignment**:
+    *   Tool: `Minimap2`
+    *   Reference: *M. tuberculosis* H37Rv (NC_000962.3).
+4.  **Variant Calling**:
+    *   Tool: `Medaka`
+    *   Model: r941_e81_sup_variant_g514
+5.  **Filtering**:
+    *   **Region Filter**: Excludes repetitive regions (PE/PPE genes).
+    *   **Type Filter**: SNPs and Indels only.
+    *   **Depth Filter**: Minimum coverage (DP) ≥ 5x.
+    *   **Quality Filter**: Genotype Quality (GQ) ≥ 20.
 
-## Drug Resistance Classification for DiagnosticReport
-| Classification | Definition | Logic |
-| :--- | :--- | :--- |
-| **Sensitive** | No resistance detected | No mutations in resistance-associated genes |
-| **RR-TB** | Rifampicin-resistant TB | Resistance to Rifampicin detected|
-| **HR-TB** | Isoniazid-resistant TB | Resistance to Isoniazid detected |
-| **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin |
-| **Pre-XDR-TB** | Pre-Extensively drug-resistant | MDR + resistance to either Fluoroquinolone **OR** second-line drug |
-| **XDR-TB** | Extensively drug-resistant | MDR + resistance to Fluoroquinolone **AND** second-line drug |
+## Illumina (Short-Read) Workflow
+**File:** `illumina.nf`
+For Illumina paired-end sequencing data
+1.  **Quality Control**:
+    *   Tool: `FastQC`
+    *   Metrics: Per-sample quality, GC content, per-base sequence quality, and N-content.
+2.  **Trimming**
+    * **Tool:** `Trimmomatic`
+    * **Function:** Quality trimming.
+    * **Settings:** Leading/Trailing quality cutoff (3), Sliding Window quality cutoff (4:20), and minimum length (36 bp).
+2.  **Alignment**:
+    *   Tool: `BWA-MEM2`
+    *   Reference: *M. tuberculosis* H37Rv (NC_000962.3).
+3.  **Variant Calling**:
+    *   Tool: `GATK HaplotypeCaller`
+4.  **Filtering**:
+    *   **Region Filter**: Excludes repetitive regions (PE/PPE genes).
+    *   **Type Filter**: SNPs and Indels only.
+    *   **Depth Filter**: Minimum coverage (DP) ≥ 5x.
+    *   **Quality Filter**: Genotype Quality (GQ) ≥ 20.
 
-## Output Structure
-```text
-results/
-├── qc/
-│   └── multiqc_report.html       
-├── lineage/
-│   └── *.lineage.json            
-├── fhir/
-│   └── *.fhir.json              
-├── fhir_merged/
-│   └── *.merged.fhir.json
-├── fhir_validated/
-│   ├── *.validation.txt
-├── reports/
-│   └── *.summary_report.txt
-├── runningstat/
-│   └── dag.html
-│   └── execution.html
-│   └── timeline.html
-├── software_versions.yml
-```
+## VCF Workflow
+**File:** `vcf.nf`
+For pre-annotated/raw variant files
+1.  **Normalization**:
+    *   Tool: `bcftools norm`
+2.  **Filtering**:
+    *   **Region Filter**: Excludes repetitive regions (PE/PPE genes).
+    *   **Type Filter**: SNPs and Indels only.
+    *   **Depth Filter**: Minimum coverage (DP) ≥ 5x.
+    *   **Quality Filter**: Genotype Quality (GQ) ≥ 20.
+
+## Variant Annotation
+Tool: `bcftools`
+Variants are matched with data from the WHO TB mutation database to assign drug resistance.
+**Annotated Fields:**
+*   `GENE`: The gene affected by the variant.
+*   `DRUG`: Antibiotics associated with resistance.
+*   `EFFECT`: Predicted molecular effect (e.g., missense, frameshift).
+*   `WHO_CLASSIFICATION`: Confidence level of resistance association (e.g., "Assoc w R").
+
+## Lineage Classification
+Determines the *M. tuberculosis* lineage based on specific SNP barcodes.
+1.  **SNP Extraction**:
+    *   Extracts variants from the VCF that overlap with known lineage markers defined in the BED file.
+2.  **Classification Algorithm**:
+    *   **Scoring**: Calculates the percentage of matching SNPs for each lineage.
+    *   **Confidence Thresholds**:
+        *   **High**: Score ≥ 80% matching SNPs and matched >= 3.
+        *   **Medium**: Score ≥ 60% matching SNPs and matched >= 2.
+        *   **Low**: Does not meet criteria.
+
+## Deeplex Excel Report Workflow
+**File:** `deeplex.nf`
+For processing Deeplex Myc-TB output files (Excel format)
+1.  **Conversion**:
+    *   Script: `xlsx_json_converter.py`
+    *   Function: Parses Excel sheets ('Drug resistance variants', 'Uncharacterised variants', 'Phylo_Syn variants') to extract variant and lineage data.
+    *   Mapping: Maps drugs to SNOMED CT and variants to HGVS nomenclature.
+2.  **Clinical Data Merge**:
+    *   Script: `merge_clinical_deeplex.py`
+    *   Function: Merges observations with clinical metadata.
+    *   **Resistance Classification**: Classifies samples (e.g., MDR-TB, XDR-TB) based on detected drug resistance profiles.
+
+## FHIR Converter
+Converts annotated variant calling data into HL7 FHIR R4 standard resources.
+1.  **Input Parsing**: Reads annotated VCFs and Lineage JSON results.
+2.  **Mapping**:
+    *   **Drugs**: Mapped to SNOMED CT codes.
+    *   **Variants**: Mapped to HGVS nomenclature.
+    *   **Observations**: Uses LOINC codes.
+3.  **Resource Creation**:
+    *   Generates `Observation` resources for each detected variant and embeds WHO classification resistance data.
+    *   Generates `DiagnosticReport` resource for the conclusion from all variants.
+
+## Workflow Parameter 
+`nextflow.config` defines all input files, directories, versioning, and specific tool parameters, relative to the base directory ($baseDir).
