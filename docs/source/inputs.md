@@ -12,3 +12,6 @@ The pipeline accepts these types of input data.
 
 ## Raw VCFs
 *   **Format**: VCF files (`.vcf` or `.vcf.gz`).
+
+## Deeplex Excel Sheet
+*   **Format**: xlsx files (`.xlsx`).
