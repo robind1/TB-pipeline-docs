@@ -1,6 +1,6 @@
 # Overview
 
-This pipeline is a Nextflow-based workflow designed for the analysis of TB genomic data. It processes raw sequencing data (long-read or short-read) to identify drug resistance mutations based on the World Health Organization (WHO) database, TB lineages, and generates a FHIR-compliant genomics bundle. 
+This pipeline is a Nextflow-based workflow designed for the analysis of TB genomic data. It processes raw sequencing data (long-read or short-read), pre-annotated VCF, and Deeplex excel sheet to identify drug resistance mutations based on the World Health Organization (WHO) database, TB lineages, and generates a FHIR-compliant genomics bundle. 
 
 It supports data ingestion from multiple sequencing technologies (Illumina and Oxford Nanopore) as well as raw VCF files. The pipeline can also ingest processed reports from the Deeplex Myc-TB platform (testing).
 
