@@ -78,6 +78,18 @@ Determines the *M. tuberculosis* lineage based on specific SNP barcodes.
         *   **Medium**: Score ≥ 60% matching SNPs and matched >= 2.
         *   **Low**: Does not meet criteria.
 
+## Deeplex Excel Report Workflow
+**File:** `deeplex.nf`
+For processing Deeplex Myc-TB output files (Excel format)
+1.  **Conversion**:
+    *   Script: `xlsx_json_converter.py`
+    *   Function: Parses Excel sheets ('Drug resistance variants', 'Uncharacterised variants', 'Phylo_Syn variants') to extract variant and lineage data.
+    *   Mapping: Maps drugs to SNOMED CT and variants to HGVS nomenclature.
+2.  **Clinical Data Merge**:
+    *   Script: `merge_clinical_deeplex.py`
+    *   Function: Merges observations with clinical metadata.
+    *   **Resistance Classification**: Classifies samples (e.g., MDR-TB, XDR-TB) based on detected drug resistance profiles.
+
 ## FHIR Converter
 Converts annotated variant calling data into HL7 FHIR R4 standard resources.
 1.  **Input Parsing**: Reads annotated VCFs and Lineage JSON results.
@@ -91,6 +103,3 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources.
 
 ## Workflow Parameter 
 `nextflow.config` defines all input files, directories, versioning, and specific tool parameters, relative to the base directory ($baseDir).
-
-
-
