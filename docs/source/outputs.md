@@ -13,6 +13,238 @@ Each detected variant generates an observation (LOINC `69548-6`) containing:
 *   **Clinical Significance**: WHO classification (e.g., *Assoc w R*) - LOINC `53037-8`.
 *   **Quality Metrics**: Allele Read Depth (DP) - LOINC `82121-5`.
 
+### Example: Variant Observation Resource
+
+```json
+    {
+      "fullUrl": "urn:uuid:89fd1a4b-1c5e-453e-922e-0ddc90aca1e3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ERR2706911-obs-2",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"
+          ],
+          "tag": [
+            {
+              "system": "http://terminology.kemkes.go.id/sp",
+              "code": "genomics",
+              "display": "Genomics"
+            }
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Genomic variant at position 6798: G>C in gene gyrB (missense_variant) - p.Gly520Ala - Associated with Levofloxacin - WHO Classification: Not assoc w R</div>"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "GE",
+                "display": "Genetics"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69548-6",
+              "display": "Genetic variant assessment"
+            }
+          ]
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "LA9633-4",
+              "display": "Present"
+            }
+          ],
+          "text": "Present"
+        },
+        "subject": {
+          "reference": "Patient/ERR2706911-patient"
+        },
+        "specimen": {
+          "reference": "Specimen/ERR2706911-specimen"
+        },
+        "effectiveDateTime": "2026-01-12T05:45:05.263815+00:00",
+        "performer": [
+          {
+            "reference": "Organization/100007732"
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81290-9",
+                  "display": "Genomic DNA change (gHGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://varnomen.hgvs.org",
+                  "code": "NC_000962.3:g.6798G>C",
+                  "display": "NC_000962.3:g.6798G>C"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://www.ncbi.nlm.nih.gov/refseq",
+                  "code": "NC_000962.3"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "82121-5",
+                  "display": "Allelic read depth"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 197,
+              "unit": "reads per base pair",
+              "system": "http://unitsofmeasure.org",
+              "code": "[1]"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48018-6",
+                  "display": "Gene studied [ID]"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://www.ncbi.nlm.nih.gov/gene",
+                  "code": "887081",
+                  "display": "gyrB"
+                }
+              ],
+              "text": "gyrB"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48019-4",
+                  "display": "DNA change type"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.sequenceontology.org",
+                  "code": "SO:0001583",
+                  "display": "missense_variant"
+                }
+              ],
+              "text": "missense_variant"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53037-8",
+                  "display": "Genetic variation clinical significance [Imp]"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.kemkes.go.id/sp",
+                  "code": "SP000481",
+                  "display": "Not assoc w R"
+                }
+              ],
+              "text": "Not assoc w R"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48005-3",
+                  "display": "Amino acid change (pHGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://varnomen.hgvs.org",
+                  "code": "NC_000962.3:p.(Gly520Ala)",
+                  "display": "Gly520Ala"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81254-5",
+                  "display": "Variant exact start-end"
+                }
+              ]
+            },
+            "valueRange": {
+              "low": {
+                "value": 6798
+              }
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/ERR2706911-obs-2"
+      }
+    }
+```
+
 ### 2. Drug Susceptibility Panel Observation
 A single summary observation (LOINC `89486-5`) reporting susceptibility status for specific drugs:
 *   **Components**: Value for each drug (e.g., Rifampicin, Isoniazid, Bedaquiline).
@@ -45,3 +277,62 @@ The `DiagnosticReport` conclusion is derived using the following logic:
 | **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin |
 | **Pre-XDR-TB** | Pre-Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** |
 | **XDR-TB** | Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** + **Group A** drugs (Bedaquiline or Linezolid) |
+
+### Example: DiagnosticReport conclusion code
+
+```json
+ ],
+        "conclusion": "HR-TB (Isoniazid-resistant tuberculosis). Detected resistance genes: katG. Detected drug resistance: isoniazid  by genotype method. TB Lineage lineage4.7 detected. Reference genome: NC_000962.3",
+        "conclusionCode": [
+          {
+            "text": "HR-TB",
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "414546009",
+                "display": "Isoniazid resistant tuberculosis"
+              }
+            ]
+          },
+          {
+            "text": "Lineage lineage4.7"
+          }
+        ],
+        "presentedForm": [
+          {
+            "contentType": "text/html",
+            "language": "en-US",
+            "title": "TB Genomic Analysis Report",
+            "data": "PGRpdiB4bWxucz0iaHR0cDovL3d3dy5......"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "DiagnosticReport/ERR2706911-genomic-report"
+      }
+    }
+```
+
+## Output Directory Structure
+
+```bash
+results/
+├── qc/
+│   └── multiqc_report.html       
+├── lineage/
+│   └── *.lineage.json            
+├── fhir/
+│   └── *.fhir.json              
+├── fhir_merged/
+│   └── *.merged.fhir.json
+├── fhir_validated/
+│   ├── *.validation.txt
+├── reports/
+│   └── *.summary_report.txt
+├── runningstat/
+│   └── dag.html
+│   └── execution.html
+│   └── timeline.html
+├── software_versions.yml
+```
