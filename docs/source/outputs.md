@@ -1,6 +1,12 @@
 # Output Files
 The primary output is a **HL7 FHIR Bundle** containing genomic observations merged with clinical data.
 
+```{image} _static/fhirgenomicsbundletb.png
+:alt: TB FHIR Genomics Bundle
+:width: 1200px
+:align: center
+```
+
 ## FHIR Genomic Bundle
 ### 1. Variant Observation Resources
 Each detected variant generates an observation (LOINC `69548-6`) containing:
@@ -831,3 +837,4 @@ results/
 │   └── timeline.html
 ├── software_versions.yml
 ```
+
