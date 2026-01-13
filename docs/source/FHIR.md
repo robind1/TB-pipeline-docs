@@ -1,43 +1,51 @@
 # FHIR Standards
 
-## Standard Terminologies Used
+## Profiles Used
 
-### LOINC Codes
+| Resource | Profile URL |
+| :--- | :--- |
+| **Patient** | `https://fhir.kemkes.go.id/r4/StructureDefinition/Patient` |
+| **Specimen** | `https://fhir.kemkes.go.id/r4/StructureDefinition/Specimen` |
+| **Organization** | `https://fhir.kemkes.go.id/r4/StructureDefinition/Organization` |
+| **Practitioner** | `https://fhir.kemkes.go.id/r4/StructureDefinition/Practitioner` |
+| **DiagnosticReport**| `http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/genomics-report` |
+
+## Standard Terminologies
+
+### LOINC Codes (Sputum & Genomics)
 
 | Code | Display Name | Usage |
 | :--- | :--- | :--- |
-| **69548-6** | Genetic variant assessment | Variant Observation resources |
-| **81247-9** | Master HL7 genetic variant reporting panel | DiagnosticReport resource |
-| **81290-9** | Genomic DNA change (gHGVS) | Genomic changes |
-| **48005-3** | Amino acid change (pHGVS) | Protein changes |
-| **48018-6** | Gene studied [ID] | Affected gene |
-| **51961-1** | Genetic variation's effect on drug efficacy | Linking variant to a drug |
-| **53037-8** | Genetic variation clinical significance [Imp] | WHO classification |
-| **82121-5** | Allelic read depth | Sequencing depth |
-| **614-8** | Mycobacterial strain [Type] in Isolate by Mycobacterial subtyping | Lineage classification |
+| **69548-6** | Genetic variant assessment | Observation (Variant) |
+| **89486-5** | Mycobacterial susceptibility panel | Observation (Panel) |
+| **81247-9** | Master HL7 genetic variant reporting panel | DiagnosticReport |
+| **81290-9** | Genomic DNA change (gHGVS) | Variant Component |
+| **48005-3** | Amino acid change (pHGVS) | Variant Component |
+| **48018-6** | Gene studied [ID] | Variant Component |
+| **48019-4** | DNA change type | Variant Component (SO terms) |
+| **53037-8** | Genetic variation clinical significance [Imp] | Variant Component (WHO Class) |
+| **81254-5** | Variant exact start-end | Variant Component |
+| **82121-5** | Allelic read depth | Variant Component |
+| **614-8** | Mycobacterial strain [Type] | Lineage Observation |
 
-### SNOMED CT Codes
+### LOINC Codes (Drug Susceptibility)
+Used within the Susceptibility Panel Observation.
 
-**Drugs**
 | Code | Display Name |
 | :--- | :--- |
-| **29175007** | Product containing rifampicin |
-| **81335000** | Product containing isoniazid |
-| **13592004** | Product containing pyrazinamide |
-| **24450004** | Product containing ethambutol |
-| **40877002** | Product containing streptomycin |
-| **1010205001** | Medicinal product containing fluoroquinolone |
-| **96087006** | Product containing levofloxacin |
-| **371296007** | Product containing moxifloxacin |
-| **48836000** | Product containing amikacin |
-| **71451001** | Product containing kanamycin |
-| **14170004** | Product containing capreomycin |
-| **414148003** | Product containing ethionamide |
-| **125695009** | Product containing linezolid |
-| **714087008** | Product containing bedaquiline |
-| **72924009** | Product containing clofazimine |
+| **89489-9** | Rifampin [Susceptibility] by Genotype method |
+| **89488-1** | Isoniazid [Susceptibility] by Genotype method |
+| **92242-7** | Pyrazinamide [Susceptibility] by Genotype method |
+| **89491-5** | Ethambutol [Susceptibility] by Genotype method |
+| **96112-8** | Moxifloxacin [Susceptibility] by Genotype method |
+| **20629-2** | levoFLOXacin [Susceptibility] |
+| **96107-8** | Bedaquiline [Susceptibility] by Genotype method |
+| **96111-0** | Linezolid [Susceptibility] by Genotype method |
+| **96114-4** | Streptomycin [Susceptibility] by Genotype method |
+| **89484-0** | Amikacin [Susceptibility] by Genotype method |
 
 ### Sequence Ontology (SO)
+Used for **48019-4** (DNA change type).
 
 | Code | Display Name |
 | :--- | :--- |
@@ -65,17 +73,19 @@
 **WHO Classification**
 | Code | Display Name | Usage |
 | :--- | :--- | :--- |
-| **LA26333-7** | Uncertain significance | LOINC |
-| **SP000478** | Assoc w R | Custom code |
-| **SP000479** | Assoc w R - Interim | Custom code |
-| **SP000480** | Not assoc w R - Interim | Custom code |
-| **SP000481** | Not assoc w R | Custom code |
+| **LA26333-7** | http://loinc.org | Uncertain significance |
+| **SP000478** | http://terminology.kemkes.go.id/sp | Assoc w R |
+| **SP000479** | http://terminology.kemkes.go.id/sp | Assoc w R - Interim |
+| **SP000481** | http://terminology.kemkes.go.id/sp | Not assoc w R |
 
-**Clinical & Specimen**
-| Code | Display Name | Usage |
+### Clinical Conclusion Codes
+Used in `DiagnosticReport.conclusionCode`.
+
+| Diagnosis | Code | System |
 | :--- | :--- | :--- |
-| **415345001** | Rifampicin resistant tuberculosis | Diagnostic conclusion |
-| **414546009** | Isoniazid resistant tuberculosis | Diagnostic conclusion |
-| **423092005** | Multidrug resistant tuberculosis | Diagnostic conclusion |
-| **OV000435** | Pre-XDR-TB | Diagnostic conclusion |
-| **710106005** | Extensively drug resistant tuberculosis | Diagnostic conclusion |
+| **Sensitive** | **TB-SO** | `https://terminology.kemkes.go.id/CodeSystem/episodeofcare-type` |
+| **RR-TB** | **415345001** | `http://snomed.info/sct` (Rifampicin resistant tuberculosis) |
+| **HR-TB** | **414546009** | `http://snomed.info/sct` (Isoniazid resistant tuberculosis) |
+| **MDR-TB** | **423092005** | `http://snomed.info/sct` (Multidrug resistant tuberculosis) |
+| **Pre-XDR-TB** | **OV000435** | `http://terminology.kemkes.go.id/CodeSystem/clinical-term` |
+| **XDR-TB** | **710106005** | `http://snomed.info/sct` (Extensively drug resistant tuberculosis) |
