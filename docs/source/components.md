@@ -98,7 +98,7 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources.
     *   **Variants**: Mapped to HGVS nomenclature.
     *   **Observations**: Uses LOINC codes.
 3.  **Resource Creation**:
-    *   Generates `Observation` resources for each detected variant and embeds WHO classification resistance data.
+    *   Generates `Variant Observation`, `Drug Susceptibility Observation`, and `Lineage Observation` resources and embeds WHO classification resistance data.
     *   Generates `DiagnosticReport` resource for the conclusion from all variants.
 
 ## Workflow Parameter 
