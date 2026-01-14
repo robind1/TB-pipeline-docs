@@ -1,7 +1,7 @@
-# FHIR Phylogenetic Analysis
+# FHIR Federated Phylogenetic Analysis
 
 ## Overview
-The [phylogenetic analysis pipeline](https://github.com/oucru-id/tb-phylo-analysis) does not process sequencing data. Instead, it processes FHIR JSON bundle files. The core logic transforms the variant observations into a comparative genomic analysis to get evolutionary relationships.
+The [phylogenetic analysis pipeline](https://github.com/oucru-id/tb-phylo-analysis) does not process raw sequencing reads (FASTQ). Instead, it processes FHIR JSON bundle files containing variant observations. The core logic transforms these variant observations into comparative genomic analyses to infer evolutionary relationships.
 
 ```{image} _static/tbphyloflow.png
 :alt: Phylogenetic Analysis Architecture Diagram
@@ -19,11 +19,11 @@ The pipeline iterates through input FHIR JSON bundle. For each file, it extracts
     *   **Conclusion:** Extracted from `DiagnosticReport` resources.
 *   **Genomic Variants:**
     *   The script scans `Observation` resources for LOINC code `69548-6` (Genetic variant).
-    *   It parses specific components (LOINC `81254-5`) for genomic position and HGVS strings (e.g., `g.7654A>T`) to identify the alternative allele.
+    *   It parses specific components gHGVS strings to identify the alternative allele.
 
 ### 2. Pseudo-Sequence Mapping
 Common analysis pipelines utilize consensus genomes, but this pipeline builds **pseudo-sequences** based on the all variants found in the FHIR JSON bundle.
-1.  **Variant Union:** The script identifies every unique genomic position where *at least one* sample in the dataset has a variant.
+1.  **Variant Union:** The script identifies every gHGVS where *at least one* sample in the dataset has a variant.
 2.  **Sequence Generation:** For every sample, a sequence string is generated corresponding to these sorted positions:
     *   If the sample has a variant at position $P$, the **Alternative** allele is used.
     *   If the sample has no record for position $P$, the **Reference** allele (from the reference FASTA) is used.
@@ -31,28 +31,36 @@ Common analysis pipelines utilize consensus genomes, but this pipeline builds **
 
 The output is a Multiple Sequence Alignment (MSA) of variable sites (SNPs) relative to the MTB H37Rv reference genome (NC_000962.3).
 
-## Algorithm
-### Distance Matrix Calculation
-*   **Metric:** Hamming Distance (SNP Distance).
-*   **Calculation:** For every pair of samples, the distance is the count of positions in their pseudo-sequences where the nucleotides differ.
-*   **Output:** Matrix with `snp-dists` format.
+## Algorithms
 
-### Phylogenetic Tree Inference
-1.  **Distance Calculation:** The `Bio.Phylo` computes the distance matrix from the MSA.
-2.  **Tree Construction:** The **Neighbor Joining (NJ)** method is used.
-3.  **Output:** The resulting tree is saved in **Newick (.nwk)** format.
+### Standard Analysis (Local)
+*   **Distance Matrix:** 
+    *   **Metric:** Hamming Distance (SNP Distance) calculated from SNP Pseudo-Sequences.
+    *   **Output:** Matrix in `snp-dists` format.
+*   **Phylogenetic Tree:** 
+    *   **Method:** Neighbor Joining (NJ) using `Bio.Phylo` on the distance matrix.
+    *   **Output:** Newick (`.nwk`) format.
+
+### Federated Analytics (Nextstrain/Augur)
+The pipeline integrates **Nextstrain Augur** to generate files suitable for federated analytics and visualization.
+
+1.  **Tree Inference (`augur tree`):** Constructs a tree from the full consensus genomes (rebuild from pseudo-sequences).
+2.  **Refinement (`augur refine`):** Optimizes branch lengths.
+3.  **Trait Inference (`augur traits`):** Reconstructs ancestral states for metadata fields like Lineage.
+4.  **Export (`augur export`):** Packages the tree, metadata, and ancestral states into a single JSON (`tb_analysis.json`) for visualization in Auspice.
 
 ## Tools & Libraries
 | Library | Purpose |
 | :--- | :--- |
-| **Biopython** (`Bio`) | Reading FASTA references (`SeqIO`), handling sequences (`SeqRecord`), creating alignments (`MultipleSeqAlignment`), and Neighbor Joining algorithm (`Phylo`). |
-| **Python Standard Library** | `json` for parsing FHIR, `re` for regex parsing of HGVS strings, `csv` for matrix output. |
+| **Biopython** (`Bio`) | Parsing references, alignment (`MultipleSeqAlignment`), Neighbor Joining (`Phylo`), and reading/writing sequences (`SeqIO`). |
+| **Augur** | Nextstrain bioinformatics toolkit for phylogenetic inference and Auspice export. |
+| **Python Std Lib** | `json` for parsing FHIR, `re` for regex parsing of HGVS strings, `csv` for matrix output. |
 
 ## Outputs
-1.  **`distance_matrix.tsv`**: Representing the number of SNP differences between every pair of samples.
-2.  **`phylo_tree.nwk`**
-3.  **`metadata.tsv`**: Sample metadata including Patient ID, Geolocation, and Lineage/Conclusion.
-4.  **Visualization:** png rendering of the phylogenetic tree (circular, rectangular, and unrooted), heatmap of SNP distances, histogram of SNP distances, and violin plot.
+1.  **`phylo/distance_matrix.tsv`**: SNP differences count between samples.
+2.  **`phylo/phylo_tree.nwk`**: Neighbor-joining tree from local analysis.
+3.  **`nextstrain_build/tb_analysis.json`**: Auspice-compatible JSON for federated visualization.
+4.  **`visualization/`**: Static plots (Circular, Rectangular, Unrooted trees) and statistical graphs (Heatmap, Histograms).
 
 ```{image} _static/phylo_tree_rectangular.png
 :alt: Rectangular phylogenetic tree TB example
