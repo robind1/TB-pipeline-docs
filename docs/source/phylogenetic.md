@@ -3,9 +3,9 @@
 ## Overview
 The [phylogenetic analysis pipeline](https://github.com/oucru-id/tb-phylo-analysis) does not process raw sequencing reads (FASTQ). Instead, it processes FHIR JSON bundle files containing variant observations. The core logic transforms these variant observations into comparative genomic analyses to infer evolutionary relationships.
 
-```{image} _static/tbphyloflow.png
+```{image} _static/tbphylofederated.png
 :alt: Phylogenetic Analysis Architecture Diagram
-:width: 700px
+:width: 800px
 :align: center
 ```
 
