@@ -84,8 +84,14 @@ Used in `DiagnosticReport.conclusionCode`.
 | Diagnosis | Code | System |
 | :--- | :--- | :--- |
 | **Sensitive** | **TB-SO** | `https://terminology.kemkes.go.id/CodeSystem/episodeofcare-type` |
-| **RR-TB** | **415345001** | `http://snomed.info/sct` (Rifampicin resistant tuberculosis) |
-| **HR-TB** | **414546009** | `http://snomed.info/sct` (Isoniazid resistant tuberculosis) |
-| **MDR-TB** | **423092005** | `http://snomed.info/sct` (Multidrug resistant tuberculosis) |
+| **RR-TB** | **415345001** | `http://snomed.info/sct` |
+| **HR-TB** | **414546009** | `http://snomed.info/sct` |
+| **MDR-TB** | **423092005** | `http://snomed.info/sct` |
 | **Pre-XDR-TB** | **OV000435** | `http://terminology.kemkes.go.id/CodeSystem/clinical-term` |
-| **XDR-TB** | **710106005** | `http://snomed.info/sct` (Extensively drug resistant tuberculosis) |
+| **XDR-TB** | **710106005** | `http://snomed.info/sct` |
+| **Streptomycin mono-resistant** | **415622003** | `http://snomed.info/sct` |
+| **Ethionamide mono-resistant** | **414149006** | `http://snomed.info/sct` |
+| **Pyrazinamide mono-resistant** | **415222009** | `http://snomed.info/sct` |
+| **Ciprofloxacin mono-resistant** | **413852006** | `http://snomed.info/sct` |
+| **Ethambutol mono-resistant** | **414146004** | `http://snomed.info/sct` |
+| **Drug-resistant (Other)** | **413556004** | `http://snomed.info/sct` |
