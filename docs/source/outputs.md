@@ -767,16 +767,22 @@ Classifies the TB strain (LOINC `614-8`) using `http://tb-lineage.org` codes (e.
     *   **Presentation**: Base64 encoded HTML report.
 
 ## Drug Resistance Classification
-The `DiagnosticReport` conclusion is derived using the following logic:
+The `DiagnosticReport` conclusion is derived using the following logic order:
 
 | Classification | Definition | Logic |
 | :--- | :--- | :--- |
 | **Sensitive** | No resistance detected | No mutations in resistance-associated genes |
+| **XDR-TB** | Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** + **Group A** drugs (Bedaquiline or Linezolid) |
+| **Pre-XDR-TB** | Pre-Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** |
+| **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin |
 | **RR-TB** | Rifampicin-resistant TB | Resistance to **Rifampicin** detected (without Isoniazid) |
 | **HR-TB** | Isoniazid-resistant TB | Resistance to **Isoniazid** detected (without Rifampicin) |
-| **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin |
-| **Pre-XDR-TB** | Pre-Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** |
-| **XDR-TB** | Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** + **Group A** drugs (Bedaquiline or Linezolid) |
+| **Streptomycin mono-resistant** | Streptomycin-resistant TB | Resistance to **Streptomycin** only |
+| **Ethionamide mono-resistant** | Ethionamide-resistant TB | Resistance to **Ethionamide** only |
+| **Pyrazinamide mono-resistant** | Pyrazinamide-resistant TB | Resistance to **Pyrazinamide** only |
+| **Ethambutol mono-resistant** | Ethambutol-resistant TB | Resistance to **Ethambutol** only |
+| **Ciprofloxacin mono-resistant** | Ciprofloxacin-resistant TB | Resistance to **Ciprofloxacin** only (without other Fluoroquinolones) |
+| **Drug-resistant** | Antibiotic resistant tuberculosis | Any other resistance combination not falling into above categories |
 
 ### Example: DiagnosticReport conclusion code
 
@@ -836,5 +842,6 @@ results/
 │   └── timeline.html
 ├── software_versions.yml
 ```
+
 
 
