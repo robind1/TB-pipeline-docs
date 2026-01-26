@@ -771,8 +771,8 @@ The `DiagnosticReport` conclusion is derived using the following logic order:
 
 | Classification | Definition | Logic |
 | :--- | :--- | :--- |
-| **Sensitive** | No resistance detected | No mutations in resistance-associated genes |
-| **XDR-TB** | Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** + **Group A** drugs (Bedaquiline or Linezolid) |
+| **Sensitive** | No resistance detected | No Associated with Resistance mutation |
+| **XDR-TB** | Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** + **Group A** drugs |
 | **Pre-XDR-TB** | Pre-Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** |
 | **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin |
 | **RR-TB** | Rifampicin-resistant TB | Resistance to **Rifampicin** detected (without Isoniazid) |
@@ -842,6 +842,7 @@ results/
 │   └── timeline.html
 ├── software_versions.yml
 ```
+
 
 
 
