@@ -1,18 +1,24 @@
 # FHIR Federated Phylogenetic Analysis
 
 ## Overview
-The [phylogenetic analysis pipeline](https://github.com/oucru-id/tb-phylo-analysis) does not process raw sequencing reads (FASTQ). Instead, it processes FHIR JSON bundle files containing variant observations. The core logic transforms these variant observations into comparative genomic analyses to infer evolutionary relationships.
+The local [phylogenetic analysis pipeline](https://github.com/oucru-id/tb-phylo-analysis-local) does not process raw sequencing reads (FASTQ). Instead, it processes FHIR JSON bundle files containing variant observations. The core logic transforms these variant observations into comparative genomic analyses to infer evolutionary relationships. The pooled coefficient (distance matrix) from each local pipeline could be sent and used to build a global model phylogenetic tree using [global phylogenetic analysis pipeline](https://github.com/oucru-id/global-model-federated-tb).
 
-```{image} _static/tbphylofederated.png
-:alt: Phylogenetic Analysis Architecture Diagram
+```{image} _static/Example1-1.png
+:alt: Federated concept
+:width: 1000px
+:align: center
+```
+
+## Data Processing (Local pipeline)
+
+```{image} _static/local_pipeline.png
+:alt: Local Phylogenetic Analysis Architecture Diagram
 :width: 800px
 :align: center
 ```
 
-## Data Processing
 ### 1. FHIR Data Ingestion & Parsing
 The pipeline iterates through input FHIR JSON bundle. For each file, it extracts:
-
 *   **Metadata:**
     *   **Patient ID:** Extracted from `Patient` resources.
     *   **Geolocation:** Latitude and Longitude extracted from `Patient` address extensions.
@@ -41,30 +47,70 @@ The output is a Multiple Sequence Alignment (MSA) of variable sites (SNPs) relat
     *   **Method:** Neighbor Joining (NJ) using `Bio.Phylo` on the distance matrix.
     *   **Output:** Newick (`.nwk`) format.
 
-### Federated Analytics (Nextstrain/Augur)
-The pipeline integrates **Nextstrain Augur** to generate files suitable for federated analytics and visualization.
-
-1.  **Tree Inference (`augur tree`):** Constructs a tree from the full consensus genomes (rebuild from pseudo-sequences).
-2.  **Refinement (`augur refine`):** Optimizes branch lengths.
-3.  **Trait Inference (`augur traits`):** Reconstructs ancestral states for metadata fields like Lineage.
-4.  **Export (`augur export`):** Packages the tree, metadata, and ancestral states into a single JSON (`tb_analysis.json`) for visualization in Auspice.
-
 ## Tools & Libraries
 | Library | Purpose |
 | :--- | :--- |
 | **Biopython** (`Bio`) | Parsing references, alignment (`MultipleSeqAlignment`), Neighbor Joining (`Phylo`), and reading/writing sequences (`SeqIO`). |
-| **Augur** | Nextstrain bioinformatics toolkit for phylogenetic inference and Auspice export. |
 | **Python Std Lib** | `json` for parsing FHIR, `re` for regex parsing of HGVS strings, `csv` for matrix output. |
 
 ## Outputs
 1.  **`phylo/distance_matrix.tsv`**: SNP differences count between samples.
 2.  **`phylo/phylo_tree.nwk`**: Neighbor-joining tree from local analysis.
-3.  **`nextstrain_build/tb_analysis.json`**: Auspice-compatible JSON for federated visualization.
-4.  **`visualization/`**: Static plots (Circular, Rectangular, Unrooted trees) and statistical graphs (Heatmap, Histograms).
+3.  **`visualization/`**: Static plots (Circular, Rectangular, Unrooted trees) and statistical graphs (Heatmap, Histograms).
 
-```{image} _static/phylo_tree_rectangular.png
-:alt: Rectangular phylogenetic tree TB example
-:width: 1200px
+## Data Processing (Global pipeline)
+This pipeline serves as the aggregation node for the federated analysis. The central node integrates distance matrices and phylogenetic trees from local sites to reconstruct a global phylogenetic tree while preserving data privacy.
+
+```{image} _static/global_pipeline.png
+:alt: Local Phylogenetic Analysis Architecture Diagram
+:width: 800px
 :align: center
 ```
-Example of a phylogenetic tree generated from the pipeline. Data used: [Afro-TB](https://bioinformatics.um6p.ma/AfroTB/), [Gómez-González et al. 2022](https://doi.org/10.1093/bib/bbac256), [Thorpe et al. 2024](https://doi.org/10.1038/s41598-024-55865-1)
+
+### 1. Federated Matrix Merging
+Reconstruction of a global distance matrix from local matrices using **Anchor**.
+
+*   **Anchor Normalization:** 
+    *   The pipeline identifies anchors present across multiple sites (specified in `nextflow.config`).
+    *   Calculates correction factors to align sequencing or pipeline-specific batch effects.
+*   **Matrix Completion (Imputation):** 
+    *   Since distinct labs do not share data directly, the distance between Patient $A_i$ (Lab A) and Patient $B_j$ (Lab B) is unknown.
+    *   The pipeline imputes these missing values based on relationships to shared anchors.
+    *   **Algorithms:** 
+        *   **SoftImpute:** Matrix completion using iterative soft-thresholding of SVD decomposition.
+
+### 2. Topology-Constrained Tree Merging
+Constructs a global phylogeny that respects locally resolved topology (inspired by **TreeMerge**).
+
+*   **Input:** Local Newick (`.nwk`) trees and the imputed global distance matrix.
+*   **Algorithm:** Constrained Neighbor Joining (NJ).
+    *   Local trees act as topological constraints (sub-trees), preserving high-confidence local clusters.
+    *   The algorithm resolves relationships between sites using the imputed global matrix values.
+*   **Rooting:** 
+    *   **Primary:** Outgroup rooting (Default: Lineage 5).
+    *   **Fallback:** Midpoint rooting if the outgroup is absent.
+
+### 3. Visualization & Analytics
+Generates actionable epidemiological reports. Code implementation found in `scripts/visualize_results.py`.
+
+*   **Transmission Networks:** HTML graphs showing transmission clusters defined by SNP thresholds (12 SNPs).
+*   **Phylogenetic Trees:** Rectangular, Circular, and Unrooted layouts.
+*   **Statistical Plots:** 
+    *   SNP distance distribution histograms and violin plots.
+    *   Distance heatmaps.
+
+## Outputs
+| Directory | File | Description |
+| :--- | :--- | :--- |
+| `federated/` | `global_distance_matrix.tsv` | Fully imputed N x N SNP distance matrix. |
+| `federated/` | `global_tree.nwk` | Merged phylogenetic tree in Newick format. |
+| `visualization/` | `transmission_network.html` | Network graph of outbreak clusters. |
+| `visualization/` | `phylo_tree_*.png` | Static tree visualizations (Circular, Rectangular, Unrooted). |
+| `visualization/` | `stats_*.png` | Histograms, Heatmaps, and Violin plots of genetic distances. |
+
+```{image} _static/federatedapproach.png
+:alt: Rectangular phylogenetic tree TB example local vs federated
+:width: 1400px
+:align: center
+```
+Example of a phylogenetic tree generated from the pipeline. Data used: [Afro-TB](https://bioinformatics.um6p.ma/AfroTB/), [Gómez-González et al. 2022](https://doi.org/10.1093/bib/bbac256), [Thorpe et al. 2024](https://doi.org/10.1038/s41598-024-55865-1), [Ghodousi et al. 2025](https://doi.org/10.1038/s41597-025-04966-1)
