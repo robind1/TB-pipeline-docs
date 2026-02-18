@@ -9,6 +9,9 @@
 | **Organization** | `https://fhir.kemkes.go.id/r4/StructureDefinition/Organization` |
 | **Practitioner** | `https://fhir.kemkes.go.id/r4/StructureDefinition/Practitioner` |
 | **DiagnosticReport**| `http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/genomics-report` |
+| **Observation (Laboratory)**| `http://terminology.hl7.org/CodeSystem/observation-category` |
+| **Observation (Genetics)**| `http://terminology.hl7.org/CodeSystem/v2-0074` |
+| **Variant**| `http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant` |
 
 ## Standard Terminologies
 
@@ -95,3 +98,4 @@ Used in `DiagnosticReport.conclusionCode`.
 | **Ciprofloxacin mono-resistant** | **413852006** | `http://snomed.info/sct` |
 | **Ethambutol mono-resistant** | **414146004** | `http://snomed.info/sct` |
 | **Drug-resistant (Other)** | **413556004** | `http://snomed.info/sct` |
+
