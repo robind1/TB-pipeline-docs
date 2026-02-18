@@ -1,8 +1,7 @@
 # Version
 
 ## Pipeline Version
-* **Mutation Analysis Version:** 1.2.0
-* **Phylogenetic Federated Analysis Version:** 1.1.0
+* **Mutation Analysis Version:** 1.3.0
 
 ## Software Dependencies
 The pipeline integrates several bioinformatics tools. Specific versions used in your run are automatically captured in the `software_versions.yml`.
@@ -27,6 +26,5 @@ The pipeline integrates several bioinformatics tools. Specific versions used in 
 1.  World Health Organization. (2023). *Catalogue of mutations in Mycobacterium tuberculosis complex and their association with drug resistance, 2nd ed*. [WHO Publication](https://www.who.int/publications/i/item/9789240082410)
 2.  Phelan, J. E., et al. (2019). *Integrating informatics tools and portable sequencing technology for rapid detection of resistance to anti-tuberculous drugs*. [Genome Medicine](https://link.springer.com/article/10.1186/s13073-019-0650-x).
 3.  Di Tommaso, P., et al. (2017). *Nextflow enables reproducible computational workflows*. [Nature Biotechnology](https://www.nature.com/articles/nbt.3820).
-
-
-
+4.  Li, H., et al. (2009). The Sequence Alignment/Map format and SAMtools. [Bioinformatics](https://academic.oup.com/bioinformatics/article/25/16/2078/204688)
+5.  Genomics Reporting Implementation Guide v3.0.0. [Variant Reporting](https://hl7.org/fhir/uv/genomics-reporting/sequencing.html)
