@@ -2,7 +2,7 @@
 
 ## Main Workflow
 **File:** `main.nf`
-The main workflow handles channel processing and parallel execution. It automatically detects input data types (Illumina, Nanopore, or VCF) and routes them to the dedicated sub-workflows. All inputs are processed concurrently.
+The main workflow handles channel processing and parallel execution. It automatically detects input data types (Illumina, Nanopore, VCF, or Deeplex Excel Report) and routes them to the dedicated sub-workflows. All inputs are processed concurrently.
 
 ## Nanopore (Long-Read) Workflow
 **File:** `nanopore.nf`
@@ -99,7 +99,7 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources.
     *   **Observations**: Uses LOINC codes.
 3.  **Resource Creation**:
     *   Generates `Variant Observation`, `Drug Susceptibility Observation`, and `Lineage Observation` resources and embeds WHO classification resistance data.
-    *   Generates `DiagnosticReport` resource for the conclusion from all variants.
+    *   Generates `DiagnosticReport` resource for the conclusion from all variants (e.g., MDR-TB, XDR-TB).
 
 ## Workflow Parameter 
 `nextflow.config` defines all input files, directories, versioning, and specific tool parameters, relative to the base directory ($baseDir).
