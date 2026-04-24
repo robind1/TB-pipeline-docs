@@ -22,6 +22,14 @@ The pipeline integrates several bioinformatics tools. Specific versions used in 
 *   **Repository**: [jodyphelan/TBProfiler](https://github.com/jodyphelan/TBProfiler)
 *   **Description**: A curated set of SNPs used for phylogenetic lineage and sub-lineage classification.
 
+## Changelog
+### 1.4.0
+The Deeplex workflow has been deprecated.
+
+### Deprecated
+- The Deeplex workflow has been deprecated and is no longer included in the default pipeline entrypoint.
+- This change does not affect the other pipeline components.
+
 ## References
 1.  World Health Organization. (2023). *Catalogue of mutations in Mycobacterium tuberculosis complex and their association with drug resistance, 2nd ed*. [WHO Publication](https://www.who.int/publications/i/item/9789240082410)
 2.  Phelan, J. E., et al. (2019). *Integrating informatics tools and portable sequencing technology for rapid detection of resistance to anti-tuberculous drugs*. [Genome Medicine](https://link.springer.com/article/10.1186/s13073-019-0650-x).
