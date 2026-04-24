@@ -2,7 +2,7 @@
 
 ## Main Workflow
 **File:** `main.nf`
-The main workflow handles channel processing and parallel execution. It automatically detects input data types (Illumina, Nanopore, VCF, or Deeplex Excel Report) and routes them to the dedicated sub-workflows. All inputs are processed concurrently.
+The main workflow handles channel processing and parallel execution. It automatically detects input data types (Illumina, Nanopore, or pre-annotated VCF) and routes them to the dedicated sub-workflows. All inputs are processed concurrently.
 
 ## Nanopore (Long-Read) Workflow
 **File:** `nanopore.nf`
@@ -77,18 +77,6 @@ Determines the *M. tuberculosis* lineage based on specific SNP barcodes.
         *   **High**: Score ≥ 80% matching SNPs and matched >= 3.
         *   **Medium**: Score ≥ 60% matching SNPs and matched >= 2.
         *   **Low**: Does not meet criteria.
-
-## Deeplex Excel Report Workflow
-**File:** `deeplex.nf`
-For processing Deeplex Myc-TB output files (Excel format)
-1.  **Conversion**:
-    *   Script: `xlsx_json_converter.py`
-    *   Function: Parses Excel sheets ('Drug resistance variants', 'Uncharacterised variants', 'Phylo_Syn variants') to extract variant and lineage data.
-    *   Mapping: Maps drugs to SNOMED CT and variants to HGVS nomenclature.
-2.  **Clinical Data Merge**:
-    *   Script: `merge_clinical_deeplex.py`
-    *   Function: Merges observations with clinical metadata.
-    *   **Resistance Classification**: Classifies samples (e.g., MDR-TB, XDR-TB) based on detected drug resistance profiles.
 
 ## FHIR Converter
 Converts annotated variant calling data into HL7 FHIR R4 standard resources.
