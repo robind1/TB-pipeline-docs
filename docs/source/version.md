@@ -23,6 +23,11 @@ The pipeline integrates several bioinformatics tools. Specific versions used in 
 *   **Description**: A curated set of SNPs used for phylogenetic lineage and sub-lineage classification.
 
 ## Changelog
+
+### 1.5.0
+- Upload to FHIR server using Auth2, including two helper scripts: get_access_token.py and get_patient_by_nik.py
+- expanded metadata CSV to fill the FHIR resources.
+
 ### 1.4.0
 The Deeplex workflow has been deprecated.
 
