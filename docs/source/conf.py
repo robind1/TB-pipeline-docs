@@ -7,9 +7,9 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'TB FHIR Mutation Pipeline'
-copyright = '2026, SPHERES-OUCRUID'
+copyright = '2026, SPHERES OUCRU-ID'
 author = 'SPHERES-OUCRUID'
-release = '1.4.0'
+release = '1.5.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
