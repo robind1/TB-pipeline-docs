@@ -31,3 +31,26 @@ To run this pipeline, you need the following prerequisites:
     ```bash
     nextflow -v
     ```
+    
+## Usage
+
+### Get Access Token (FHIR Upload)
+
+```bash
+python scripts/get_access_token.py
+```
+
+### Basic Run
+
+```bash
+nextflow run main.nf
+```
+
+### Run with FHIR Upload
+
+> Get the access token first before running with upload.
+
+```bash
+nextflow run main.nf \
+  --fhir_server_url "https://<BASE_URL>/fhir"
+```
