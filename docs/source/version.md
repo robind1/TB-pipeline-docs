@@ -25,7 +25,7 @@ The pipeline integrates several bioinformatics tools. Specific versions used in 
 ## Changelog
 
 ### 1.5.0
-- Upload to FHIR server using Auth2, including two helper scripts: get_access_token.py and get_patient_by_nik.py
+- Upload to FHIR server using Auth2, including helper script: get_access_token.py
 - expanded metadata CSV to fill the FHIR resources.
 
 ### 1.4.0
