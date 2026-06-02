@@ -80,6 +80,7 @@ Used for **48019-4** (DNA change type).
 | **SP000478** | http://terminology.kemkes.go.id/sp | Assoc w R |
 | **SP000479** | http://terminology.kemkes.go.id/sp | Assoc w R - Interim |
 | **SP000481** | http://terminology.kemkes.go.id/sp | Not assoc w R |
+| **SP000480** | http://terminology.kemkes.go.id/sp | Not assoc w R - Interim |
 
 ### Clinical Conclusion Codes
 Used in `DiagnosticReport.conclusionCode`.
