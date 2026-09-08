@@ -19,7 +19,8 @@ For Oxford Nanopore Technologies (ONT) sequencing data
     *   Reference: *M. tuberculosis* H37Rv (NC_000962.3).
 4.  **Variant Calling**:
     *   Tool: `Medaka`
-    *   Model: r941_e81_sup_variant_g514
+    *   Model: configurable via `params.medaka_model`; defaults to `'r941_e81_sup_variant_g514'` (R9.4.1).
+        Set `medaka_model` =  `r1041_e82_400bps_sup_variant_v5.0.0` (R10.4.1)chemistry.
 5.  **Filtering**:
     *   **Region Filter**: Excludes repetitive regions (PE/PPE genes).
     *   **Type Filter**: SNPs and Indels only.
@@ -58,6 +59,34 @@ For pre-annotated/raw variant files
     *   **Depth Filter**: Minimum coverage (DP) ≥ 5x.
     *   **Quality Filter**: Genotype Quality (GQ) ≥ 20.
 
+## Coverage Assessment
+**File:** `coverage.nf`
+Determines, per drug, whether the resistance loci were actually sequenced. This is what allows a
+"no resistance mutation detected" result to be distinguished.
+
+1.  **Target Generation** (`scripts/make_who_targets.py`):
+    *   Derives resistance loci directly from the WHO catalogue annotation table.
+    *   Variant positions are clustered per gene (`--max-gap`, default 5000 bp).
+    *   Each locus is padded by `promoter_padding` (default 200 bp), clamped to the contig length
+        using the reference `.fai`, and the repetitive-region mask is subtracted.
+    *   Output: `who_targets.bed`.
+2.  **Depth Measurement**:
+    *   Tool: `mosdepth` (`--by who_targets.bed --thresholds <min_depth>,30 --no-per-base`)
+3.  **Assessability Summary** (`scripts/summarize_coverage.py`):
+    *   Interval-level coverage is aggregated to genes as a length-weighted mean, so genes split
+        by the repeat mask are reported as one locus.
+    *   A gene is **adequate** when the fraction of bases at ≥ `coverage_min_depth` reaches
+        `coverage_min_breadth`.
+    *   A **drug is assessable only when every one of its catalogue loci is adequate**.
+    *   Output: `<sample>.coverage.json`.
+
+**VCF input:** pre-called VCFs carry no alignment, so no coverage can be derived. These samples
+receive an explicit `coverage_assessed: false`, and every non-resistant
+drug is reported as **Indeterminate** rather than Susceptible.
+
+**Parameters:** `coverage_min_depth` (default 10), `coverage_min_breadth` (default 0.95),
+`promoter_padding` (default 200).
+
 ## Variant Annotation
 Tool: `bcftools`
 Variants are matched with data from the WHO TB mutation database to assign drug resistance.
@@ -86,8 +115,9 @@ Converts annotated variant calling data into HL7 FHIR R4 standard resources.
     *   **Variants**: Mapped to HGVS nomenclature.
     *   **Observations**: Uses LOINC codes.
 3.  **Resource Creation**:
-    *   Generates `Variant Observation`, `Drug Susceptibility Observation`, and `Lineage Observation` resources and embeds WHO classification resistance data.
-    *   Generates `DiagnosticReport` resource for the conclusion from all variants (e.g., MDR-TB, XDR-TB).
+    *   Generates `Variant Observation`, `Drug Susceptibility Observation`, `Region Studied Observation`, and `Lineage Observation` resources and embeds WHO classification resistance data.
+    *   Each variant carries one medication-assessed and clinical-significance component **pair per drug**.
+    *   Generates `DiagnosticReport` resource for the conclusion from all variants (e.g., MDR-TB, XDR-TB), plus `Device` and `Provenance` recording the software that produced the calls.
 
 ## Upload to FHIR Server
 **File:** `upload_fhir.nf`
