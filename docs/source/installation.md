@@ -14,7 +14,8 @@ To run this pipeline, you need the following prerequisites:
 *   [GATK](https://gatk.broadinstitute.org/hc/en-us) 
 *   [Medaka](https://github.com/nanoporetech/medaka)
 *   [bcftools](https://github.com/samtools/bcftools)
-*   [samtools](https://github.com/samtools/samtools) 
+*   [samtools](https://github.com/samtools/samtools)
+*   [mosdepth](https://github.com/brentp/mosdepth)
 *   [FHIR validator](https://github.com/hapifhir/org.hl7.fhir.validator-wrapper)
 
 ## Setup
