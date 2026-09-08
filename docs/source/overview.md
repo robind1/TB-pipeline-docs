@@ -7,6 +7,7 @@
 * **Drug Resistance Analysis**:  Identifies mutations associated with TB drug resistance based on WHO's latest [TB mutation database](https://github.com/GTB-tbsequencing/mutation-catalogue-2023/tree/main).
 * **Lineage Classification**: Identifies TB lineages based on barcode SNPs.
 * **FHIR Compliance**: Generates standardized genomics data exchange formats.
+* **Coverage-gated susceptibility**: A drug is only reported susceptible when the resistance loci were sequenced. Otherwise it is Indeterminate.
 * **Clinical Integration**: Merges genomic data with clinical metadata.
 * **Quality Control**: QC reporting with MultiQC.
 
@@ -28,6 +29,7 @@ tb-to-fhir-full
 │   ├── vcf.nf                          # VCF sub-workflow
 │   ├── lineage.nf                      # Lineage classification
 │   ├── fhir.nf                         # FHIR variants generation
+│   ├── coverage.nf                     # WHO target coverage / assessability
 │   ├── validate_fhir.nf                # FHIR validation
 │   ├── merge_clinical_data.nf          # Clinical metadata merge
 │   ├── upload_fhir.nf                  # FHIR server upload
@@ -38,6 +40,8 @@ tb-to-fhir-full
 │   ├── clinical_metadata_parser.py     # Patient/org/practitioner parser
 │   ├── generate_sample_report.py       # Per-sample text report
 │   ├── lineage_classifier.py           # SNP-barcode lineage classifier
+│   ├── make_who_targets.py             # WHO resistance loci to BED
+│   ├── summarize_coverage.py           # mosdepth to per-drug assessability
 │   ├── merge_clinical_fhir.py          # FHIR genomics + clinical data merger
 │   ├── upload_fhir.py                  # FHIR uploader
 │   ├── get_access_token.py             # Standalone token fetcher
@@ -48,6 +52,7 @@ tb-to-fhir-full
 │   ├── H37Rv.fasta                     # Reference genome
 │   ├── repetitive_regions.bed          # Exclusion regions
 │   ├── *_lineage.bed                   # Lineage barcode SNPs
+│   ├── gene_ncbi_map.tsv               # Optional gene
 │   ├── *_annotation_table.tsv.gz       # WHO mutation annotation table
 │   ├── patient_clinical_metadata.csv   # Patient metadata
 │   ├── organization_metadata.csv       # Organization metadata
