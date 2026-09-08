@@ -1,7 +1,7 @@
 # Version
 
 ## Pipeline Version
-1.5.0
+1.6.0
 
 ## Software Dependencies
 The pipeline integrates several bioinformatics tools. Specific versions used in your run are automatically captured in the `software_versions.yml`.
@@ -24,6 +24,12 @@ The pipeline integrates several bioinformatics tools. Specific versions used in 
 
 ## Changelog
 
+### 1.6.0
+- Fixing Multi-drug variants resistance call.
+- Genes without a verified NCBI GeneID no longer emit an invalid coding.
+- Adding coverage assessment.
+- Susceptibility is now a three-state result.
+  
 ### 1.5.0
 - Upload to FHIR server using Auth2, including helper script: get_access_token.py
 - expanded metadata CSV to fill the FHIR resources.
