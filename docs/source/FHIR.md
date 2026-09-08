@@ -12,6 +12,9 @@
 | **Observation (Laboratory)**| `http://terminology.hl7.org/CodeSystem/observation-category` |
 | **Observation (Genetics)**| `http://terminology.hl7.org/CodeSystem/v2-0074` |
 | **Variant**| `http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant` |
+| **Region Studied**| `http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/region-studied` |
+| **Device** | `http://hl7.org/fhir/StructureDefinition/Device` |
+| **Provenance** | `http://hl7.org/fhir/StructureDefinition/Provenance` |
 
 ## Standard Terminologies
 
@@ -28,8 +31,30 @@
 | **48019-4** | DNA change type | Variant Component (SO terms) |
 | **53037-8** | Genetic variation clinical significance [Imp] | Variant Component (WHO Class) |
 | **81254-5** | Variant exact start-end | Variant Component |
-| **82121-5** | Allelic read depth | Variant Component |
+| **82121-5** | Allelic read depth | Variant Component / Region Studied (mean depth) |
+| **48013-7** | Genomic reference sequence ID | Variant Component / Region Studied |
+| **81258-6** | Sample variant allelic frequency [NFr] | Variant Component |
+| **51963-7** | Medication assessed [Identifier] | Variant Component |
+| **53041-0** | DNA region of interest panel | Region Studied Observation |
 | **614-8** | Mycobacterial strain [Type] | Lineage Observation |
+
+### Susceptibility Result Codes
+Used as `valueCodeableConcept` on each drug component of the Susceptibility Panel.
+
+| Code | Display Name | Meaning |
+| :--- | :--- | :--- |
+| **LA6676-6** | Resistant | A WHO group 1 or 2 variant was detected |
+| **LA24225-7** | Susceptible | No such variant **and** coverage of every locus for that drug was confirmed |
+| **LA9663-1** | Indeterminate | No such variant, but coverage could not be confirmed |
+
+### Genomics Reporting `tbd-codes-cs`
+System: `http://hl7.org/fhir/uv/genomics-reporting/CodeSystem/tbd-codes-cs`
+
+| Code | Display Name | Usage |
+| :--- | :--- | :--- |
+| **coverage-breadth** | Fraction of bases at >= *N*x | Region Studied Component (percent) |
+| **variant-quality** | Variant call quality (QUAL) | Variant Component |
+| **mapping-quality** | Mapping quality (MQ) | Variant Component |
 
 ### LOINC Codes (Drug Susceptibility)
 Used within the Susceptibility Panel Observation.
@@ -72,6 +97,18 @@ Used for **48019-4** (DNA change type).
 | **SO:0001580** | coding_sequence_variant |
 | **SO:0001619** | non_coding_transcript_variant |
 | **SO:0001566** | regulatory_region_variant |
+| **SO:0002054** | loss_of_function_variant |
+| **SO:0001792** | non_coding_transcript_exon_variant |
+| **SO:0001582** | initiator_codon_variant |
+| **SO:0001879** | feature_ablation |
+| **SO:0001906** | feature_truncation |
+| **SO:0001826** | disruptive_inframe_deletion |
+| **SO:0001824** | disruptive_inframe_insertion |
+| **SO:0001574** | splice_acceptor_variant |
+| **SO:0001575** | splice_donor_variant |
+| **SO:0001630** | splice_region_variant |
+| **SO:0001893** | transcript_ablation |
+| **SO:0001637** | rRNA_gene_variant |
 
 **WHO Classification**
 | Code | Display Name | Usage |
@@ -87,7 +124,10 @@ Used in `DiagnosticReport.conclusionCode`.
 
 | Diagnosis | Code | System |
 | :--- | :--- | :--- |
-| **Sensitive** | **TB-SO** | `https://terminology.kemkes.go.id/CodeSystem/episodeofcare-type` |
+| **No resistance detected** | **TB-SO** | `https://terminology.kemkes.go.id/CodeSystem/episodeofcare-type` |
+| **No resistance detected – partial** | *(uncoded)* | Neither drug-sensitive nor drug-resistant is true |
+| **Indeterminate** | *(uncoded)* | No drug could be assessed |
+| **Drug-resistant – rifampicin not assessable** | **413556004** | `http://snomed.info/sct` |
 | **RR-TB** | **415345001** | `http://snomed.info/sct` |
 | **HR-TB** | **414546009** | `http://snomed.info/sct` |
 | **MDR-TB** | **423092005** | `http://snomed.info/sct` |
@@ -100,3 +140,43 @@ Used in `DiagnosticReport.conclusionCode`.
 | **Ethambutol mono-resistant** | **414146004** | `http://snomed.info/sct` |
 | **Drug-resistant (Other)** | **413556004** | `http://snomed.info/sct` |
 
+## Pipeline-Local Code Systems
+
+These are published by the pipeline rather than by an external authority. They exist because no
+standard code covers the concept; they are namespaced so downstream consumers can recognise and
+ignore them safely.
+
+### Lineage
+`http://terminology.spheres.id/CodeSystem/mtb-lineage` Primary lineage coding
+(e.g. `lineage4.7`). Replaces the previously used `http://tb-lineage.org`; that coding is retained as a **secondary** coding on the same
+`valueCodeableConcept` for traceability.
+
+### Lineage Attributes
+`http://terminology.spheres.id/CodeSystem/mtb-lineage-attribute` — components on the Lineage
+Observation.
+
+| Code | Value type | Meaning |
+| :--- | :--- | :--- |
+| **lineage-family** | string | e.g. *East-African-Indian* |
+| **lineage-confidence** | string | e.g. *high* |
+| **lineage-score** | Quantity | Barcode match score, 0.0 – 1.0 |
+| **barcode-snps-matched** | Quantity | Barcode SNPs matched |
+| **barcode-snps-total** | Quantity | Barcode SNPs examined |
+
+### Pipeline Properties
+`http://terminology.spheres.id/CodeSystem/pipeline-property` — `Device.property` entries recording
+the configuration that produced the calls.
+
+| Code | Value type | Meaning |
+| :--- | :--- | :--- |
+| **source-repository** | CodeableConcept (text) | Pipeline source repository URL |
+| **filter-min-depth** | Quantity | Variant-calling depth filter |
+| **filter-min-quality** | Quantity | Variant-calling quality filter |
+| **coverage-min-depth** | Quantity | Depth at which a base counts as covered |
+| **coverage-min-breadth** | Quantity | Fraction of a locus that must reach that depth |
+
+## Gene Identifiers
+
+Genes are coded against `https://www.ncbi.nlm.nih.gov/gene` using the NCBI GeneID. Genes without a
+verified GeneID are emitted as `valueCodeableConcept.text` **only**. Additional mappings can be
+supplied via `data/gene_ncbi_map.tsv`.
