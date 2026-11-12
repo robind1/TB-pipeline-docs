@@ -1,17 +1,22 @@
-.. TB Mutation Pipeline documentation master file
+TBtoFHIR
+========
 
-Platform-agnostic TB genomics pipeline (TBtoFHIR)
-==================================
+TBtoFHIR is a Nextflow pipeline that turns *Mycobacterium tuberculosis* sequencing data into
+WHO-catalogue drug-resistance calls, lineage and coverage QC, reported as HL7 FHIR R4 resources
+that conform to the Genomics Reporting IG 3.0.0.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contents
 
    overview
-   architecture
    installation
    inputs
+   clinical_metadata
+   configuration
+   architecture
    components
    outputs
    FHIR
+   limitations
    version

@@ -1,0 +1,12 @@
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+    white-space: normal;
+    vertical-align: top;
+}
+
+.rst-content .wy-table-responsive table code.literal,
+.rst-content .wy-table-responsive table code.literal span.pre {
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+}

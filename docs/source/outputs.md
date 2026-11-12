@@ -1,156 +1,157 @@
-# Output Files
-The primary output is a **HL7 FHIR Bundle** containing genomic observations merged with clinical data.
-```{image} _static/fhirgenomicsbundletb.png
-:alt: TB FHIR Genomics Bundle
-:width: 1200px
-:align: center
+# Outputs
+
+## Output directory
+
+```text
+results/
+├── pipeline_info/          execution report, timeline, trace, DAG, software_versions.yml
+├── qc/fastqc/              FastQC reports (Illumina)
+├── qc/nanoplot/            <id>_NanoStats.txt, <id>_NanoPlot-report.html (ONT)
+├── qc/multiqc/             multiqc_report.html
+├── qc/coverage/            who_targets.bed, <id>.coverage.json, mosdepth beds
+├── variants/               <id>.filtered_variants.vcf.gz, <id>.annotated_variants.vcf.gz
+├── lineage/                <id>.lineage.json
+├── reports/                <id>.summary_report.txt
+└── fhir/
+    ├── genomic/            <id>.genomic.fhir.json                      (no patient data)
+    ├── clinical/           clinical resources, clinical_summary.tsv    (personal data)
+    ├── bundle/             <id>.bundle.fhir.json, link_summary.tsv     (personal data)
+    ├── validation/         validation_summary.tsv, validation_<n>.json
+    └── upload/             <id>.bundle.upload.json
 ```
 
-## FHIR Genomic Bundle
-### 1. Variant Observation Resources
-Each detected variant generates an observation (LOINC `69548-6`) containing:
-*   **Genomic Coordinates**: 
-    *   **gHGVS**: Genomic DNA change (e.g., `NC_000962.3:g.761155C>T`) - LOINC `81290-9`.
-    *   **pHGVS**: Amino acid change (e.g., `p.Ser315Thr`) - LOINC `48005-3`.
-    *   **Exact Start-End**: Genomic position - LOINC `81254-5`.
-*   **Gene Information**: The affected gene (e.g., *rpoB*) - LOINC `48018-6`.
-*   **DNA Change Type**: Sequence Ontology term (e.g., *missense_variant*) - LOINC `48019-4`.
-*   **Medication Assessed**: The drug the grade applies to - LOINC `51963-7` (SNOMED coded).
-*   **Clinical Significance**: WHO classification (e.g., *Assoc w R*) - LOINC `53037-8`.
-*   **Reference Sequence**: Genomic reference sequence ID - LOINC `48013-7`.
-*   **Quality Metrics**:
-    *   Allele Read Depth (DP) - LOINC `82121-5`.
-    *   Sample variant allelic frequency - LOINC `81258-6`.
-    *   Variant call quality (QUAL) and Mapping quality (MQ) - `tbd-codes-cs`.
+## FHIR output layers
+
+| Step | Output | Contains |
+| --- | --- | --- |
+| genomic (always) | `fhir/genomic/<id>.genomic.fhir.json` | DiagnosticReport; variant, susceptibility-panel, region-studied and lineage Observations; Device; Provenance. **No patient data**: the subject is the reference `Patient/<id>-patient`. |
+| clinical (with `--patient_metadata`) | `fhir/clinical/` | Patient, Specimen, Encounter and ServiceRequest per sample; Organization, Practitioner and PractitionerRole once. **Personal data.** |
+| link (with `--patient_metadata`) | `fhir/bundle/<id>.bundle.fhir.json` | One FHIR `transaction` per sample, with every reference resolved inside the bundle. **Personal data.** |
+
+The genomic bundle is a FHIR `collection`. The codes in each resource are listed on
+[FHIR standards](FHIR.md).
+
+## Genomic bundle
+
+### Variant Observation
+
+One per detected variant, LOINC `69548-6` (Genetic variant assessment), with the Genomics
+Reporting `variant` profile. Components:
+- **Genomic DNA change (gHGVS)**, e.g. `NC_000962.3:g.761155C>T` (LOINC `81290-9`)
+- **Variant exact start-end** (LOINC `81254-5`)
+- **Gene studied** (LOINC `48018-6`), coded with the NCBI GeneID where one is verified
+- **DNA change type** (LOINC `48019-4`), a Sequence Ontology term such as `missense_variant`
+- **Medication assessed** (LOINC `51963-7`, SNOMED CT drug) and **clinical significance**
+  (LOINC `53037-8`, the WHO grade): one pair **per drug**
+- **WHO variant name**, e.g. `rpoB_p.Ser450Leu`:
+  - `generic`: its own component, `who-variant-id`
+  - `satusehat`: amino acid change (LOINC `48005-3`)
+- **Genomic reference sequence** (LOINC `48013-7`)
+- **Allelic read depth** (LOINC `82121-5`) and **allele frequency** (LOINC `81258-6`)
+- **Variant call quality (QUAL)** and **mapping quality (MQ)**, `variant-quality` and
+  `mapping-quality`
 
 ```{note}
-**Per-drug grading.** A variant graded against more than one drug carries a
-`51963-7` / `53037-8` **pair for each drug**. The WHO catalogue grades each (variant, drug) pair
-independently, so for example a `pepQ` loss-of-function variant is reported as *Assoc w R* for
-Bedaquiline and *Uncertain significance* for Clofazimine within the same Observation.
+**Per-drug grading.** The WHO catalogue grades each (variant, drug) pair separately. A variant
+graded for several drugs carries a medication / clinical-significance pair for each, so a
+*pepQ* loss-of-function variant can be *Assoc w R* for bedaquiline and *Uncertain significance*
+for clofazimine in the same Observation.
 ```
 
-### 2. Drug Susceptibility Panel Observation
-A single summary observation (LOINC `89486-5`) reporting susceptibility status for specific drugs:
-*   **Components**: Value for each drug (e.g., Rifampicin, Isoniazid, Bedaquiline).
-*   **Values**: one of **three** states.
+### Drug susceptibility panel
+
+One Observation, LOINC `89486-5`, with a component per drug (17 drugs; see
+[FHIR standards](FHIR.md#drug-susceptibility-codes)). Each drug has one of **three** values:
 
 | State | LOINC | Meaning |
-| :--- | :--- | :--- |
-| **Resistant** | `LA6676-6` | A WHO group 1 or 2 variant was detected |
+| --- | --- | --- |
+| **Resistant** | `LA6676-6` | A variant graded *Assoc w R* or *Assoc w R - Interim* (WHO group 1 or 2) was detected |
 | **Susceptible** | `LA24225-7` | No such variant **and** every locus for that drug met the coverage threshold |
-| **Indeterminate** | `LA9663-1` | No such variant, but coverage of the relevant loci could not be confirmed |
+| **Indeterminate** | `LA9663-1` | No such variant, but coverage of the relevant loci was not confirmed |
 
 ```{warning}
 **Absence of a resistance mutation is not evidence of susceptibility.** `Susceptible` is only
-emitted when the drug's resistance loci were demonstrably sequenced to the configured depth and
-breadth; otherwise the result is `Indeterminate`. Indeterminate components carry a `text` value
-naming the specific loci that blocked the call, for example:
-*"Indeterminate - no resistance-associated mutation detected, but susceptibility cannot be
-confirmed (insufficient coverage at: Rv0678)"*.
+reported when the drug's resistance loci were sequenced to the configured depth and breadth;
+otherwise the result is `Indeterminate`. An Indeterminate component names the loci that blocked
+the call, for example: *"Indeterminate - no resistance-associated mutation detected, but
+susceptibility cannot be confirmed (insufficient coverage at: Rv0678)"*.
 ```
 
-### 3. Region Studied Observation
-Records which resistance loci were actually examined. This is the evidence behind a
-negative result.
+### Region-studied Observations
 
-*   **Profile**: `http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/region-studied`
-*   **Code**: LOINC `53041-0` (DNA region of interest panel)
-*   **Granularity**: one Observation per gene.
-*   **Components**:
-    *   Gene studied - LOINC `48018-6`
-    *   Genomic reference sequence ID - LOINC `48013-7`
-    *   Mean depth - LOINC `82121-5`
-    *   Fraction of bases at ≥ *N*× - `tbd-codes-cs` `coverage-breadth` (percent)
+One per gene, LOINC `53041-0` (DNA region of interest panel). They record which resistance loci
+were examined, which is the evidence behind a negative result. Components:
+- **Gene studied** (LOINC `48018-6`)
+- **Mean depth** (LOINC `82121-5`)
+- **Fraction of bases at ≥ *N*×**, `coverage-breadth` (percent)
 
 ```{note}
-The breadth figure is a **gene-level summary**. A gene may read 96% covered while the missing 4%
-happens to include the resistance-determining codon. Per-base detail is available in
-`results/qc/*.regions.bed.gz` and `*.thresholds.bed.gz`.
+Breadth is a **gene-level** summary. A gene may read 96% covered while the missing 4% includes
+the resistance-determining codon. Per-base detail is in the mosdepth files in `qc/coverage/`.
 ```
 
-### 4. Lineage Observation
+### Lineage Observation
 
-| Component code | Value |
-| :--- | :--- |
-| `lineage-family` | e.g. *East-African-Indian* |
-| `lineage-confidence` | e.g. *high* |
-| `lineage-score` | 0.0 – 1.0 |
-| `barcode-snps-matched` | Barcode SNPs matched |
-| `barcode-snps-total` | Barcode SNPs examined |
+LOINC `614-8`. The value is the lineage from the barcode classifier, e.g. `lineage4.3`, coded in
+the project `mtb-lineage` CodeSystem (`satusehat` adds a `http://tb-lineage.org` coding).
+Components:
 
-## Clinical Data Integration & Reporting
+| Component | Value |
+| --- | --- |
+| `lineage-family` | e.g. *Euro-American* |
+| `lineage-confidence` | *high*, *medium* or *low* |
+| `lineage-score` | share of barcode SNPs matched, 0.0–1.0 |
+| `barcode-snps-matched` | barcode SNPs matched |
+| `barcode-snps-total` | barcode SNPs examined |
 
-### Generated Resources
-*   **Patient**: uses `https://fhir.kemkes.go.id/r4/StructureDefinition/Patient` profile.
-*   **Specimen**: Sputum sample details.
-*   **ServiceRequest**: Order for genetic assessment.
-*   **Organization**: Testing facility details.
-*   **Practitioner & PractitionerRole**: Medical staff details.
-*   **DiagnosticReport**: 
-    *   **Code**: LOINC `81247-9` (Master HL7 genetic variant reporting panel).
-    *   **Conclusion**: Text summary of resistance and lineage. Drugs that could not be assessed
-        are named.
-    *   **Presentation**: Base64 encoded HTML report.
-*   **Device**: The pipeline that produced the calls (`TBtoFHIR`), its version, and the source
-    repository. SNOMED `706689003` (Application program software).
-*   **Provenance**: One per sample, targeting the `DiagnosticReport` and every Observation it
-    rests on. Agents are the software (`assembler`) and the performing Organization (`performer`),
-    with activity `CREATE`.
+### DiagnosticReport
 
-## Drug Resistance Classification
-The `DiagnosticReport` conclusion is derived using the following logic order:
+- **Profile and code**:
+  - `generic`: `genomic-report`, LOINC `51969-4` (Genetic analysis report), with `81247-9` as a
+    second coding
+  - `satusehat`: `genomics-report`, LOINC `81247-9`
+- **Conclusion**: the resistance classification (below) and the lineage, as text and as
+  `conclusionCode`. Drugs that could not be assessed are named.
+- **presentedForm**: an HTML report, base64-encoded.
+- **performer**: the Organization given by `--performer_org_id`, if any.
 
-| Classification | Definition | Logic |
-| :--- | :--- | :--- |
-| **XDR-TB** | Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** + **Group A** drugs |
-| **Pre-XDR-TB** | Pre-Extensively drug-resistant | (MDR or RR) + Resistance to **Fluoroquinolones** |
-| **MDR-TB** | Multidrug-resistant TB | Resistance to **both** Isoniazid and Rifampicin |
-| **RR-TB** | Rifampicin-resistant TB | Resistance to **Rifampicin** detected (without Isoniazid) |
-| **HR-TB** | Isoniazid-resistant TB | Resistance to **Isoniazid**, with Rifampicin **assessed and susceptible** |
-| **Streptomycin mono-resistant** | Streptomycin-resistant TB | Resistance to **Streptomycin** only |
-| **Ethionamide mono-resistant** | Ethionamide-resistant TB | Resistance to **Ethionamide** only |
-| **Pyrazinamide mono-resistant** | Pyrazinamide-resistant TB | Resistance to **Pyrazinamide** only |
-| **Ethambutol mono-resistant** | Ethambutol-resistant TB | Resistance to **Ethambutol** only |
-| **Ciprofloxacin mono-resistant** | Ciprofloxacin-resistant TB | Resistance to **Ciprofloxacin** only (without other Fluoroquinolones) |
-| **Drug-resistant** | Antibiotic resistant tuberculosis | Any other resistance combination not falling into above categories |
-| **Drug-resistant – rifampicin not assessable** | Resistance present, class undetermined | Resistance detected, but Rifampicin could not be assessed, so RR/MDR/pre-XDR/XDR cannot be determined |
-| **No resistance detected** | No resistance, fully assessed | No resistance variant, and **all** drug groups were assessable |
-| **No resistance detected – partial** | No resistance, partly assessed | No resistance variant, but some drugs could not be assessed |
-| **Indeterminate** | Nothing assessable | No resistance variant and **no** drug could be assessed |
+### Device and Provenance
+
+- **Device**: TBtoFHIR, its version, source repository and filter settings, SNOMED CT
+  `706689003` (Application program software).
+- **Provenance**: one per sample, targeting the DiagnosticReport and every Observation it rests
+  on, with the software as `assembler` and the performing Organization as `performer`.
+
+## Clinical resources and linked bundle
+
+With `--patient_metadata`, the clinical step adds Patient, Specimen, Encounter and
+ServiceRequest per sample, and Organization, Practitioner and PractitionerRole. With
+`--fhir_profile satusehat` they carry the Kemkes profiles, NIK identifiers and Kemkes extensions.
+
+The link step writes one FHIR `transaction` per sample in `fhir/bundle/`, joining the genomic
+report to the ServiceRequest, Encounter, Organization and Practitioner. See
+[Clinical metadata](clinical_metadata.md#what-the-link-step-adds).
+
+## Drug resistance classification
+
+The DiagnosticReport conclusion is the first class that applies, in this order:
+
+| Classification | Criteria |
+| --- | --- |
+| **No resistance detected** | No resistance variant, and **all** drug groups were assessable |
+| **No resistance detected - partial** | No resistance variant, but some drugs could not be assessed |
+| **Indeterminate** | No resistance variant, and no drug could be assessed |
+| **Drug-resistant - rifampicin not assessable** | Resistance detected, but rifampicin could not be assessed, so RR/MDR/pre-XDR/XDR cannot be decided |
+| **XDR-TB** | MDR or RR, plus fluoroquinolone resistance, plus Group A drug resistance |
+| **Pre-XDR-TB** | MDR or RR, plus fluoroquinolone resistance |
+| **MDR-TB** | Resistance to both isoniazid and rifampicin |
+| **RR-TB** | Rifampicin resistance without isoniazid resistance |
+| **HR-TB** | Isoniazid resistance, rifampicin **assessed and susceptible** |
+| **Streptomycin-, Ethionamide-, Pyrazinamide-, Ethambutol- or Ciprofloxacin-resistant TB** | Resistance to that drug (group) only |
+| **Drug-resistant** | Any other resistance combination |
 
 ```{warning}
-The classifications that depend on Rifampicin (RR / MDR / Pre-XDR / XDR) are only asserted when
-Rifampicin itself was assessable. An indeterminate Rifampicin blocks classification rather than
-falling through to a lower class.
-
-`Sensitive` is no longer emitted. The Kemkes `TB-SO` ("Tuberkulosis Sensitif Obat") coding is
-reserved for **No resistance detected**, where every drug group was genuinely assessable.
-```
-
-## Output Directory Structure
-
-```bash
-results/
-├── qc/
-│   └── multiqc_report.html
-│   └── who_targets.bed           
-│   └── *.coverage.json            
-│   └── *.regions.bed.gz         
-│   └── *.thresholds.bed.gz       
-├── lineage/
-│   └── *.lineage.json            
-├── fhir/
-│   └── *.fhir.json              
-├── fhir_merged/
-│   └── *.merged.fhir.json
-├── fhir_validated/
-│   ├── *.validation.txt
-├── reports/
-│   └── *.summary_report.txt
-├── runningstat/
-│   └── dag.html
-│   └── execution.html
-│   └── timeline.html
-├── software_versions.yml
+The classes that depend on rifampicin (RR, MDR, pre-XDR, XDR) are only asserted when rifampicin
+itself was assessable. An Indeterminate rifampicin blocks the classification instead of falling
+through to a lower class. "Sensitive" is never reported.
 ```
