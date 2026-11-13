@@ -49,7 +49,7 @@ The versions used in a run are collected in `pipeline_info/software_versions.yml
 
 ## Changelog
 
-See [CHANGELOG.md](https://github.com/oucru-id/tb-to-fhir-full/blob/2.0.0-dev/CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/oucru-id/tb-to-fhir-full/blob/main/CHANGELOG.md).
 
 ## References
 
