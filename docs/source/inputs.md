@@ -16,7 +16,7 @@ TB0003,vcf,,,/data/TB0003.vcf.gz
 ```
 
 ```bash
-nextflow run oucru-id/tb-to-fhir-full -r 2.0.0-dev -profile docker \
+nextflow run oucru-id/tb-to-fhir-full -r 2.0.0 -profile docker \
   --input samplesheet.csv --outdir results
 ```
 
