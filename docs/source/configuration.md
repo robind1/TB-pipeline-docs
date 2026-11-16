@@ -15,7 +15,7 @@ and listed by `nextflow run . --help`. Values are checked against the schema bef
 | `--performer_org_id` | | performing laboratory, as the genomic report's performer |
 | `--medaka_model` | | required for ONT input |
 | `--coverage_min_depth` / `--coverage_min_breadth` | `10` / `0.95` | assessability threshold per locus |
-| `--filter_min_depth` / `--filter_min_quality` | `5` / `20` | variant call filters |
+| `--filter_min_depth` / `--filter_min_quality` | `5` / `20` | variant call filters; `--filter_min_depth` is also the minimum depth of a lineage barcode site |
 | `--skip_fhir_validation` | `false` | skip the HL7 FHIR validator |
 | `--max_cpus` / `--max_memory` / `--max_time` | `8` / `16 GB` / `24h` | cap on any single task |
 
@@ -58,7 +58,7 @@ and listed by `nextflow run . --help`. Values are checked against the schema bef
 | `filter_min_depth` | `5` | Minimum read depth (DP) of a variant call. |
 | `filter_min_quality` | `20` | Minimum call quality: QUAL for Illumina (GATK), GQ for ONT (medaka), GQ or QUAL for VCF input. |
 | `coverage_min_depth` | `10` | Depth at which a base of a resistance locus counts as covered. |
-| `coverage_min_breadth` | `0.95` | Fraction of a locus that must be covered for a drug to be assessable (otherwise Indeterminate). |
+| `coverage_min_breadth` | `0.95` | Fraction of a locus that must be covered for a drug to be assessable (otherwise Indeterminate). Applies to the loci that carry a WHO grade 1-2 variant for the drug. |
 | `promoter_padding` | `200` | Padding (bp) around catalogue variant clusters when building coverage targets. |
 
 ### FHIR output
