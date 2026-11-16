@@ -2,7 +2,7 @@
 
 ## Pipeline version
 
-**2.0.0**
+**2.0.1**
 
 ## Software
 
@@ -16,7 +16,7 @@
 | GATK | 4.4.0.0 |
 | medaka | 2.1.0 |
 | chopper | 0.12.0 |
-| NanoPlot | 1.48.0 (new in 2.0) |
+| NanoPlot | 1.48.0 |
 | bcftools | 1.19 |
 | mosdepth | 0.3.6 |
 | MultiQC | 1.30 |
