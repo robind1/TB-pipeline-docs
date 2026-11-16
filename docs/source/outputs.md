@@ -71,10 +71,11 @@ One Observation, LOINC `89486-5`, with a component per drug (17 drugs; see
 
 ```{warning}
 **Absence of a resistance mutation is not evidence of susceptibility.** `Susceptible` is only
-reported when the drug's resistance loci were sequenced to the configured depth and breadth;
-otherwise the result is `Indeterminate`. An Indeterminate component names the loci that blocked
-the call, for example: *"Indeterminate - no resistance-associated mutation detected, but
-susceptibility cannot be confirmed (insufficient coverage at: Rv0678)"*.
+reported when the drug's resistance loci, the genes that carry a WHO grade 1-2 variant for it,
+were sequenced to the configured depth and breadth; otherwise the result is `Indeterminate`. An
+Indeterminate component names the loci that blocked the call, for example: *"Indeterminate - no
+resistance-associated mutation detected, but susceptibility cannot be confirmed (insufficient
+coverage at: Rv0678)"*.
 ```
 
 ### Region-studied Observations
@@ -92,17 +93,22 @@ the resistance-determining codon. Per-base detail is in the mosdepth files in `q
 
 ### Lineage Observation
 
-LOINC `614-8`. The value is the lineage from the barcode classifier, e.g. `lineage4.3`, coded in
-the project `mtb-lineage` CodeSystem (`satusehat` adds a `http://tb-lineage.org` coding).
-Components:
+LOINC `614-8`. The value is the lineage from the barcode classifier, e.g. `lineage4.3.3`, coded in
+the project `mtb-lineage` CodeSystem (`satusehat` adds a `http://tb-lineage.org` coding). When the
+lineage is `unknown`, the Observation is left out. Components:
 
 | Component | Value |
 | --- | --- |
 | `lineage-family` | e.g. *Euro-American* |
 | `lineage-confidence` | *high*, *medium* or *low* |
-| `lineage-score` | share of barcode SNPs matched, 0.0–1.0 |
-| `barcode-snps-matched` | barcode SNPs matched |
-| `barcode-snps-total` | barcode SNPs examined |
+| `lineage-score` | mean allele fraction of the called lineage's barcode markers, 0.0–1.0 |
+| `barcode-snps-matched` | barcode markers of the called lineage that are present |
+| `barcode-snps-total` | barcode markers of the called lineage |
+
+`lineage/<id>.lineage.json` holds more detail: the path from main lineage to the call
+(`lineage_path`), the evidence used (`pileup` or `vcf`), `possible_mixed_infection` with the
+`minor_lineages` seen at 10-50% allele fraction, `ambiguous_sublineages`, and a `reason` when the
+lineage is `unknown`.
 
 ### DiagnosticReport
 
