@@ -12,7 +12,8 @@ flowchart TD
     ILL & ONT & VCF --> FIL["Filter variants"]
     ILL & ONT -->|BAM| COV["Coverage over<br/>WHO resistance loci"]
     FIL --> ANN["WHO catalogue annotation"]
-    FIL --> LIN["Lineage"]
+    FIL --> LIN["Lineage<br/>barcode allele counts"]
+    ILL & ONT -->|BAM| LIN
     ANN & LIN & COV --> GEN["FHIR genomic bundle<br/>(no patient data)"]
     META[/"Clinical metadata<br/>(optional)"/] --> CLIN["FHIR clinical resources"]
     GEN & CLIN --> LINK["Linked transaction bundle"]
