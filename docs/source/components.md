@@ -80,16 +80,14 @@ alleles set from H37Rv where they disagree). They have no alignment, so coverage
 one drug and uncertain for another.
 
 ## Coverage assessment
-
 **File:** `subworkflows/local/coverage.nf`
-
-Decides, per drug, whether the resistance loci were actually sequenced.
-
 1. **Targets** (`bin/make_who_targets.py`):
-   - Resistance loci come from the WHO annotation table.
+   - Loci come from the WHO annotation table: every gene with a catalogue entry for a drug.
    - Variant positions are clustered per gene (gaps up to 5000 bp).
    - Each locus is padded by `--promoter_padding` (200 bp), clamped to the contig, and the repeat
      mask is subtracted.
+   - A `gating_drugs` column lists the drugs for which the gene carries a WHO grade 1-2 variant
+     (`Assoc w R` or `Assoc w R - Interim`).
    - Output: `qc/coverage/who_targets.bed`.
 2. **Depth**: `mosdepth --by who_targets.bed --thresholds … --no-per-base`.
 3. **Assessability** (`bin/summarize_coverage.py`):
@@ -97,23 +95,41 @@ Decides, per drug, whether the resistance loci were actually sequenced.
      mask counts as one locus.
    - A gene is **adequate** when the fraction of bases at ≥ `--coverage_min_depth` (10) reaches
      `--coverage_min_breadth` (0.95).
-   - A **drug is assessable only when every one of its loci is adequate**.
+   - A **drug is assessable when every gene that carries a grade 1-2 variant for it is
+     adequate** (its `gating_loci`). For rifampicin that is `rpoB`; for isoniazid `katG` and
+     `inhA`; for delamanid `ddn`, `fbiA`, `fbiB`, `fbiC`, `fgd1` and `Rv2983`.
+   - Genes with only uncertain or not-associated entries are still summarised (and listed as
+     `inadequate_other_loci` when poorly covered) but do not block a susceptible result.
    - Output: `qc/coverage/<id>.coverage.json`.
-
+  
 VCF input has no alignment, so its coverage file says `coverage_assessed: false`, and every
-non-resistant drug is reported Indeterminate.
+non-resistant drug is reported as Indeterminate.
 
 ## Lineage classification
 
 **File:** `subworkflows/local/lineage.nf`
 
-1. **Barcode SNPs**: variants at the lineage barcode positions are extracted from the filtered
-   VCF.
-2. **Classification** (`bin/lineage_classifier.py`): each lineage is scored by the share of its
-   barcode SNPs that match. The confidence is:
-   - **high**: score ≥ 0.8 and at least 3 SNPs matched
-   - **medium**: score ≥ 0.6 and at least 2 SNPs matched
-   - **low**: otherwise
+1. **Barcode pileup** (`BARCODE_PILEUP`, Illumina and ONT): `bcftools mpileup -a AD` counts the
+   alleles at every barcode site in the BAM (mapping quality ≥ 20, base quality ≥ 13, or ≥ 7 for
+   ONT). A site below `--filter_min_depth` reads counts as no data.
+2. **VCF input** has no alignment. The classifier reads the barcode sites from the filtered VCF;
+   a site missing from the VCF is taken as the reference only when the VCF is genome-wide (at
+   least 50 SNPs).
+3. **Classification** (`bin/lineage_classifier.py`):
+   - Each marker gets the allele fraction of its lineage allele.
+   - A lineage is **present** when at least half its markers have data and their mean fraction
+     is ≥ 0.5, and **absent** when that mean is below 0.5.
+   - If two sibling sublineages are both present, their common parent is reported, with
+     `ambiguous_sublineages` and confidence `low`.
+   - With no usable barcode data, or no present lineage, the lineage is `unknown` with a
+     `reason`.
+   - A lineage outside the call at 10-50% mean allele fraction is listed in `minor_lineages` and
+     sets `possible_mixed_infection`.
+4. **Confidence**:
+   - **high**: every lineage on the path present at ≥ 0.9 mean allele fraction, enough supporting
+     markers, no inferred reference and no mixed flag
+   - **medium**: called lineage at ≥ 0.7
+   - **low**: otherwise, and for ambiguous calls
 
 ## FHIR genomic step
 
