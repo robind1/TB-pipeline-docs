@@ -16,20 +16,26 @@ stop codon that the catalogue does not list is not graded.
 Multi-nucleotide variants are dropped by the variant filter (`bcftools view -v snps,indels`).
 GATK reports SNVs by default, but a submitted VCF with MNVs loses them.
 
-## Coverage gate covers every catalogue gene
+## Coverage gate works per gene
 
-A drug is Susceptible only when **every** catalogue locus for that drug is adequately covered,
-including genes that carry no resistance-associated variant. Poor coverage in such a gene makes
-the drug Indeterminate. The region-studied Observations and the Indeterminate text name the loci
-that blocked the call.
+A drug is Susceptible only when every gene that carries a WHO grade 1-2 variant for it reaches
+`--coverage_min_breadth` at `--coverage_min_depth`. The check is per gene so:
+- for genes where only a few positions matter (for example `rrl`, `rrs`, `eis` or `embB`), a gap
+  elsewhere in the gene can still make the drug Indeterminate;
+- a gene can pass at 95% breadth while the missing bases include the resistance-determining codon.
 
-## Lineage without barcode evidence
+Loss-of-function genes such as `Rv0678`, `pepQ`, `ddn` or `ethA` need the whole gene, so poor
+coverage there correctly leaves the drug Indeterminate. The region-studied Observations and the
+Indeterminate text name the loci that blocked the call.
 
-The barcode's lineage-4 alleles equal the H37Rv reference, so they never appear in a VCF. When no
-barcode SNP matches (lineage-4 samples, or poor coverage at the barcode sites), the classifier
-reports the first lineage in the barcode file (`lineage4.2.2.1`) with 0 matched SNPs and
-confidence `low`. Check `matched_snps` and `confidence` in `lineage/<id>.lineage.json`, or the
-lineage Observation's components, before relying on the call.
+## Lineage barcode
+
+- The barcode (`data/2026-05-11_lineage.bed`) has no `lineage4.10`; isolates that newer barcodes
+  call 4.10 are reported as one of the lineages it contains or as `lineage4`.
+- Mixed-infection detection uses the barcode sites only: two strains of the same sublineage, or a
+  minor strain below about 10%, are not flagged.
+- For VCF input the classifier cannot see coverage, so it assumes a barcode site missing from a
+  genome-wide VCF is the reference. Calls that depend on this are marked `reference_inferred`.
 
 ## Allele frequency depends on the caller
 
