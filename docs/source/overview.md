@@ -12,9 +12,9 @@ resources that conform to the
   one samplesheet.
 - **Per-drug WHO grading**: grades come from the final grading of the WHO mutation catalogue
   (2nd edition, 2023).
-- **Coverage-gated susceptibility**: a drug is reported susceptible only when every one of its
-  resistance loci was sequenced to the required depth and breadth. Otherwise it is
-  **Indeterminate**.
+- **Coverage-gated susceptibility**: a drug is reported susceptible only when every locus that
+  carries a WHO grade 1-2 (associated with resistance) variant for that drug was sequenced to the
+  required depth and breadth. Otherwise it is **Indeterminate**.
 - **Lineage classification** from barcode SNPs, with confidence and SNP support.
 - **QC**: FastQC (Illumina) or NanoPlot (ONT), MultiQC, and per-locus coverage over the WHO
   resistance targets.
