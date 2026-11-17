@@ -8,7 +8,7 @@ patient data:
 - **practitioner table**: the responsible clinician, giving Practitioner and PractitionerRole.
 
 ```bash
-nextflow run oucru-id/tb-to-fhir-full -r 2.0.0 -profile docker --input samplesheet.csv \
+nextflow run oucru-id/tb-to-fhir-full -r 2.0.2 -profile docker --input samplesheet.csv \
   --patient_metadata site/patients.csv \
   --organization_metadata site/organization.csv \
   --practitioner_metadata site/practitioner.csv \
