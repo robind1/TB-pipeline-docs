@@ -1,7 +1,7 @@
 project = "TBtoFHIR"
 copyright = "2026, SPHERES OUCRU-ID"
 author = "SPHERES OUCRU-ID"
-release = "2.0.0"
+release = "2.0.2"
 
 extensions = [
     "myst_parser",
