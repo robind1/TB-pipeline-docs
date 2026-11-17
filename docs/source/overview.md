@@ -14,7 +14,9 @@ resources that conform to the
   (2nd edition, 2023).
 - **Coverage-gated susceptibility**: a drug is reported susceptible only when every locus that
   carries a WHO grade 1-2 (associated with resistance) variant for that drug was sequenced to the
-  required depth and breadth. Otherwise it is **Indeterminate**.
+  required depth. Loci whose graded variants for the drug include loss-of-function alleles need the required breadth over the whole locus;
+  for the other loci every graded position must reach the required
+  depth. Otherwise it is **Indeterminate**.
 - **Lineage classification** from barcode SNPs, with confidence and SNP support.
 - **QC**: FastQC (Illumina) or NanoPlot (ONT), MultiQC, and per-locus coverage over the WHO
   resistance targets.
