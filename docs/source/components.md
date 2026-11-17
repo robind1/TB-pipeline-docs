@@ -14,8 +14,7 @@ branch for its platform. All samples run in parallel.
 
 **File:** `subworkflows/local/prepare_reference.nf`
 
-Indexes the H37Rv reference (NC_000962.3) **once per run**: `samtools faidx`, the GATK sequence
-dictionary and, when there are Illumina samples, the bwa-mem2 index.
+Indexes the H37Rv reference (NC_000962.3) **once per run**.
 
 ## Illumina (short-read) branch
 
@@ -25,7 +24,7 @@ dictionary and, when there are Illumina samples, the bwa-mem2 index.
 2. **Trimming**: Trimmomatic, `LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:36`.
 3. **Alignment**: bwa-mem2 with `-K 100000000`, so alignments do not depend on the number of
    CPUs.
-4. **Variant calling**: GATK HaplotypeCaller. The Java heap is derived from the task memory.
+4. **Variant calling**: GATK HaplotypeCaller.
 
 ## Nanopore (long-read) branch
 
@@ -33,7 +32,7 @@ dictionary and, when there are Illumina samples, the bwa-mem2 index.
 
 1. **Read QC**: NanoPlot.
 2. **Read filtering**: chopper, minimum read quality `--nanopore_min_q` (10) and minimum length
-   `--nanopore_min_l` (500).
+   `--nanopore_min_l` (200).
 3. **Alignment**: minimap2.
 4. **Variant calling**: medaka with the model given in `--medaka_model`.
 
@@ -41,8 +40,7 @@ dictionary and, when there are Illumina samples, the bwa-mem2 index.
 
 **File:** `modules/local/vcf_normalize.nf`
 
-VCFs are sorted and normalised with `bcftools norm` (multi-allelic records split, reference
-alleles set from H37Rv where they disagree). They have no alignment, so coverage cannot be assessed (see
+VCFs are sorted and normalised with `bcftools norm`. They have no alignment, so coverage cannot be assessed (see
 [Coverage assessment](#coverage-assessment)).
 
 ## Variant filtering
@@ -76,11 +74,10 @@ alleles set from H37Rv where they disagree). They have no alignment, so coverage
 | `WHO_CLASSIFICATION` | the WHO final grade, one per drug, e.g. `Assoc w R` |
 | `VARIANT_ID` | the WHO catalogue variant name, one per drug, e.g. `rpoB_p.Ser450Leu` |
 
-`DRUG`, `WHO_CLASSIFICATION` and `VARIANT_ID` are aligned lists, so a variant can be resistant to
-one drug and uncertain for another.
-
 ## Coverage assessment
+
 **File:** `subworkflows/local/coverage.nf`
+
 1. **Targets** (`bin/make_who_targets.py`):
    - Loci come from the WHO annotation table: every gene with a catalogue entry for a drug.
    - Variant positions are clustered per gene (gaps up to 5000 bp).
@@ -89,19 +86,35 @@ one drug and uncertain for another.
    - A `gating_drugs` column lists the drugs for which the gene carries a WHO grade 1-2 variant
      (`Assoc w R` or `Assoc w R - Interim`).
    - Output: `qc/coverage/who_targets.bed`.
-2. **Depth**: `mosdepth --by who_targets.bed --thresholds … --no-per-base`.
-3. **Assessability** (`bin/summarize_coverage.py`):
+2. **Graded positions** (same script):
+   - For each drug and gene whose grade 1-2 variants for that drug include no loss-of-function
+     allele, the positions of those variants, merged, without padding, and with the repeat mask
+     subtracted.
+   - Loss-of-function means an effect of `loss_of_function_variant`, `frameshift_variant`,
+     `stop_gained`, `start_lost` or `stop_lost`.
+   - Output: `qc/coverage/who_positions.bed`.
+3. **Depth**: two mosdepth passes with `--no-per-base`, one with `--by who_targets.bed
+   --thresholds …` and one with `--by who_positions.bed --thresholds <coverage_min_depth>`.
+4. **Assessability** (`bin/summarize_coverage.py`):
    - Coverage is aggregated per gene as a length-weighted mean, so a gene split by the repeat
      mask counts as one locus.
-   - A gene is **adequate** when the fraction of bases at ≥ `--coverage_min_depth` (10) reaches
-     `--coverage_min_breadth` (0.95).
-   - A **drug is assessable when every gene that carries a grade 1-2 variant for it is
-     adequate** (its `gating_loci`). For rifampicin that is `rpoB`; for isoniazid `katG` and
-     `inhA`; for delamanid `ddn`, `fbiA`, `fbiB`, `fbiC`, `fgd1` and `Rv2983`.
+   - The **gating loci** of a drug (`gating_loci`) are the genes that carry a grade 1-2 variant
+     for it. For rifampicin that is `rpoB`; for isoniazid `katG` and `inhA`; for delamanid `ddn`,
+     `fbiA`, `fbiB`, `fbiC`, `fgd1` and `Rv2983`.
+   - A gating locus whose graded variants for the drug include a loss-of-function allele (for
+     example `katG`, `ethA`, `Rv0678`) is **adequate** when the fraction of its bases at ≥
+     `--coverage_min_depth` (10) reaches `--coverage_min_breadth` (0.95).
+   - The other gating loci are **position-gated**: such a locus is adequate when every base of
+     its graded positions is at ≥ `--coverage_min_depth`; gaps elsewhere in the gene do not count.
+     With the current annotation table these are `rpoB`, `rrs`, `eis`, `rrl`, `embB`, `gyrA`,
+     `gyrB`, `rpsL`, `rplC`, `inhA` and `atpE`.
+   - A **drug is assessable when all its gating loci are adequate**.
    - Genes with only uncertain or not-associated entries are still summarised (and listed as
      `inadequate_other_loci` when poorly covered) but do not block a susceptible result.
-   - Output: `qc/coverage/<id>.coverage.json`.
-  
+   - Output: `qc/coverage/<id>.coverage.json`. Per drug it lists `gating_loci`,
+     `inadequate_loci`, `position_gated_loci` and `uncovered_positions`; per gene,
+     `graded_positions` and `graded_positions_at_min_depth`.
+
 VCF input has no alignment, so its coverage file says `coverage_assessed: false`, and every
 non-resistant drug is reported as Indeterminate.
 
@@ -113,8 +126,7 @@ non-resistant drug is reported as Indeterminate.
    alleles at every barcode site in the BAM (mapping quality ≥ 20, base quality ≥ 13, or ≥ 7 for
    ONT). A site below `--filter_min_depth` reads counts as no data.
 2. **VCF input** has no alignment. The classifier reads the barcode sites from the filtered VCF;
-   a site missing from the VCF is taken as the reference only when the VCF is genome-wide (at
-   least 50 SNPs).
+   A site missing from the VCF is treated as reference only when the VCF is genome-wide.
 3. **Classification** (`bin/lineage_classifier.py`):
    - Each marker gets the allele fraction of its lineage allele.
    - A lineage is **present** when at least half its markers have data and their mean fraction
