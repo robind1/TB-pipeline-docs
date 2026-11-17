@@ -2,10 +2,9 @@
 
 Every parameter is defined in
 [`nextflow_schema.json`](https://github.com/oucru-id/tb-to-fhir-full/blob/main/nextflow_schema.json)
-and listed by `nextflow run . --help`. Values are checked against the schema before anything runs.
+and listed by `nextflow run . --help`.
 
 ## Most used parameters
-
 | Parameter | Default | Purpose |
 | --- | --- | --- |
 | `--input` | | samplesheet (see [Inputs](inputs.md)) |
