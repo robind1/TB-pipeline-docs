@@ -16,7 +16,7 @@ TB0003,vcf,,,/data/TB0003.vcf.gz
 ```
 
 ```bash
-nextflow run oucru-id/tb-to-fhir-full -r 2.0.0 -profile docker \
+nextflow run oucru-id/tb-to-fhir-full -r v2.0.2 -profile docker \
   --input samplesheet.csv --outdir results
 ```
 
@@ -50,7 +50,8 @@ The files in the folders must be named:
 ## Nanopore reads
 
 ONT input needs `--medaka_model`, for example `r1041_e82_400bps_sup_variant_v5.0.0` for R10.4.1
-chemistry. List the available models with `medaka tools list_models`.
+chemistry. With the container profiles only the models bundled in the medaka image can be given by
+name; see [Known limitations](limitations.md#medaka-models-in-containers).
 
 ## VCF input
 
