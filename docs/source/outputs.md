@@ -8,7 +8,7 @@ results/
 ├── qc/fastqc/              FastQC reports (Illumina)
 ├── qc/nanoplot/            <id>_NanoStats.txt, <id>_NanoPlot-report.html (ONT)
 ├── qc/multiqc/             multiqc_report.html
-├── qc/coverage/            who_targets.bed, <id>.coverage.json, mosdepth beds
+├── qc/coverage/            who_targets.bed, who_positions.bed, <id>.coverage.json, mosdepth beds
 ├── variants/               <id>.filtered_variants.vcf.gz, <id>.annotated_variants.vcf.gz
 ├── lineage/                <id>.lineage.json
 ├── reports/                <id>.summary_report.txt
@@ -66,16 +66,17 @@ One Observation, LOINC `89486-5`, with a component per drug (17 drugs; see
 | State | LOINC | Meaning |
 | --- | --- | --- |
 | **Resistant** | `LA6676-6` | A variant graded *Assoc w R* or *Assoc w R - Interim* (WHO group 1 or 2) was detected |
-| **Susceptible** | `LA24225-7` | No such variant **and** every locus for that drug met the coverage threshold |
-| **Indeterminate** | `LA9663-1` | No such variant, but coverage of the relevant loci was not confirmed |
+| **Susceptible** | `LA24225-7` | No such variant **and** every gating locus for that drug met the coverage threshold |
+| **Indeterminate** | `LA9663-1` | No such variant, but coverage of the gating loci was not confirmed |
 
 ```{warning}
 **Absence of a resistance mutation is not evidence of susceptibility.** `Susceptible` is only
-reported when the drug's resistance loci, the genes that carry a WHO grade 1-2 variant for it,
-were sequenced to the configured depth and breadth; otherwise the result is `Indeterminate`. An
-Indeterminate component names the loci that blocked the call, for example: *"Indeterminate - no
-resistance-associated mutation detected, but susceptibility cannot be confirmed (insufficient
-coverage at: Rv0678)"*.
+reported when the drug's gating loci, the genes that carry a WHO grade 1-2 variant for it, were
+sequenced to the configured depth and breadth (loss-of-function loci) or to the configured depth
+at every graded position (the others; see
+[Coverage assessment](components.md#coverage-assessment)).
+Otherwise the result is `Indeterminate`. An Indeterminate component names the loci that blocked
+the call, and the position for a position-gated locus.
 ```
 
 ### Region-studied Observations
@@ -88,7 +89,9 @@ were examined, which is the evidence behind a negative result. Components:
 
 ```{note}
 Breadth is a **gene-level** summary. A gene may read 96% covered while the missing 4% includes
-the resistance-determining codon. Per-base detail is in the mosdepth files in `qc/coverage/`.
+the resistance-determining codon. For position-gated loci the susceptible call checks the graded
+positions themselves; their counts are in `qc/coverage/<id>.coverage.json`
+(`graded_positions_at_min_depth`). Per-base detail is in the mosdepth files in `qc/coverage/`.
 ```
 
 ### Lineage Observation
