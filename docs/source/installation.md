@@ -28,13 +28,13 @@ curl -s https://get.nextflow.io | bash
 Run it straight from GitHub:
 
 ```bash
-nextflow run oucru-id/tb-to-fhir-full -r 2.0.0 -profile docker --input samplesheet.csv --outdir results
+nextflow run oucru-id/tb-to-fhir-full -r 2.0.2 -profile docker --input samplesheet.csv --outdir results
 ```
 
 Or clone it and run the local copy:
 
 ```bash
-git clone -b 2.0.0 https://github.com/oucru-id/tb-to-fhir-full.git
+git clone -b 2.0.2 https://github.com/oucru-id/tb-to-fhir-full.git
 cd tb-to-fhir-full
 nextflow run . -profile docker --input samplesheet.csv --outdir results
 ```
