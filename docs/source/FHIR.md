@@ -51,8 +51,8 @@ Genomics Reporting profiles are under
 | Code | Display | Meaning |
 | --- | --- | --- |
 | `LA6676-6` | Resistant | A variant graded *Assoc w R* or *Assoc w R - Interim* was detected |
-| `LA24225-7` | Susceptible | No such variant **and** coverage was confirmed at every locus that carries a grade 1-2 variant for that drug |
-| `LA9663-1` | Indeterminate | No such variant, but coverage of those loci could not be confirmed |
+| `LA24225-7` | Susceptible | No such variant **and** coverage was confirmed at every locus that carries a grade 1-2 variant for that drug: the whole locus for loss-of-function loci, the graded positions for the others |
+| `LA9663-1` | Indeterminate | No such variant, but coverage of those loci or positions could not be confirmed |
 
 ## Drug susceptibility codes
 
