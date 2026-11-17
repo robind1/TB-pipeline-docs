@@ -1,7 +1,7 @@
 # Configuration
 
 Every parameter is defined in
-[`nextflow_schema.json`](https://github.com/oucru-id/tb-to-fhir-full/blob/2.0.0-dev/nextflow_schema.json)
+[`nextflow_schema.json`](https://github.com/oucru-id/tb-to-fhir-full/blob/main/nextflow_schema.json)
 and listed by `nextflow run . --help`. Values are checked against the schema before anything runs.
 
 ## Most used parameters
@@ -14,7 +14,7 @@ and listed by `nextflow run . --help`. Values are checked against the schema bef
 | `--patient_metadata` | | enables the clinical and link steps |
 | `--performer_org_id` | | performing laboratory, as the genomic report's performer |
 | `--medaka_model` | | required for ONT input |
-| `--coverage_min_depth` / `--coverage_min_breadth` | `10` / `0.95` | assessability threshold per locus |
+| `--coverage_min_depth` / `--coverage_min_breadth` | `10` / `0.95` | coverage needed for a susceptible call (see [Coverage assessment](components.md#coverage-assessment)) |
 | `--filter_min_depth` / `--filter_min_quality` | `5` / `20` | variant call filters; `--filter_min_depth` is also the minimum depth of a lineage barcode site |
 | `--skip_fhir_validation` | `false` | skip the HL7 FHIR validator |
 | `--max_cpus` / `--max_memory` / `--max_time` | `8` / `16 GB` / `24h` | cap on any single task |
@@ -28,7 +28,7 @@ and listed by `nextflow run . --help`. Values are checked against the schema bef
 | `input` | | Samplesheet CSV with columns `sample,platform,fastq_1,fastq_2,vcf`. |
 | `reads_dir` | | Folder input: `<id>_1_illumina.fastq.gz` / `<id>_2_illumina.fastq.gz` and `<id>_ont.fastq.gz` files. |
 | `vcf_dir` | | Folder input: `<id>.vcf` or `<id>.vcf.gz` files. |
-| `outdir` | `results` | Output directory. (`--results_dir` was removed in 2.0.0.) |
+| `outdir` | `results` | Output directory. |
 
 ### Reference data
 
@@ -47,7 +47,7 @@ and listed by `nextflow run . --help`. Values are checked against the schema bef
 | --- | --- | --- |
 | `trimmomatic_jar` | | Path to `trimmomatic.jar` when the `trimmomatic` command is not on `PATH`. |
 | `nanopore_min_q` | `10` | chopper minimum read quality. |
-| `nanopore_min_l` | `500` | chopper minimum read length. |
+| `nanopore_min_l` | `200` | chopper minimum read length. |
 | `medaka_model` | | medaka model; required for ONT input (e.g. `r1041_e82_400bps_sup_variant_v5.0.0`). |
 | `medaka_batch_size` | `100` | medaka inference batch size. |
 
@@ -57,8 +57,8 @@ and listed by `nextflow run . --help`. Values are checked against the schema bef
 | --- | --- | --- |
 | `filter_min_depth` | `5` | Minimum read depth (DP) of a variant call. |
 | `filter_min_quality` | `20` | Minimum call quality: QUAL for Illumina (GATK), GQ for ONT (medaka), GQ or QUAL for VCF input. |
-| `coverage_min_depth` | `10` | Depth at which a base of a resistance locus counts as covered. |
-| `coverage_min_breadth` | `0.95` | Fraction of a locus that must be covered for a drug to be assessable (otherwise Indeterminate). Applies to the loci that carry a WHO grade 1-2 variant for the drug. |
+| `coverage_min_depth` | `10` | Depth at which a base of a resistance locus or graded position counts as covered. |
+| `coverage_min_breadth` | `0.95` | Fraction of a locus that must be covered for a drug to be assessable (otherwise Indeterminate). Applies to loci whose WHO grade 1-2 variants for the drug include a loss-of-function allele; the other loci need every graded position at `coverage_min_depth`. |
 | `promoter_padding` | `200` | Padding (bp) around catalogue variant clusters when building coverage targets. |
 
 ### FHIR output
